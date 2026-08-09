@@ -16,12 +16,14 @@ slash-separated path (e.g. `flags-parsing/types`, `cli/dry-run`).
 
 ## Topics
 
-- `kool-create` — scaffold new projects with `kool create` (react,
-  go-react, frontend, server, electron)
+- `kool-create` — scaffold new projects with `kool create` (go-cli,
+  react, go-react, frontend, server, electron, …)
 - `cmd-exec` — running external commands with
   `github.com/xhd2015/xgo/support/cmd` (Debug mode, output capture,
   env vars, directory, I/O redirect)
-- `cli` — CLI UX and skill CLI packaging
+- `cli` — CLI UX, project layout, and skill CLI packaging
+  - `project-layout` — thin main / `cmd`, `run` package, assets outside
+    `cmd` (matches `kool create go-cli`)
   - `color` — terminal ANSI color: `--color` / `--no-color`, TTY
     auto, and the `NO_COLOR` env convention
   - `streaming` — stream CLI output as work proceeds; avoid
@@ -59,6 +61,7 @@ go-best-practice skill --show
 
 # category / nested (slash path; both flag orders)
 go-best-practice skill --show cli
+go-best-practice skill --show cli/project-layout
 go-best-practice skill --show cli/dry-run
 go-best-practice skill --show cli/output-alignment
 go-best-practice skill flags-parsing/types --show

@@ -1,10 +1,12 @@
-package main
+package run
 
 import (
 	"io"
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/xhd2015/go-best-practice/skill"
 )
 
 func TestListTopics(t *testing.T) {
@@ -22,6 +24,7 @@ func TestListTopics(t *testing.T) {
 		"cli/dry-run",
 		"cli/inline-tui-mouse",
 		"cli/output-alignment",
+		"cli/project-layout",
 		"cli/skill-cli",
 		"cli/streaming",
 		"cmd-exec",
@@ -114,6 +117,25 @@ func TestReadTopicCLIColor(t *testing.T) {
 	}
 	if !strings.Contains(content, "go-best-practice/cli/color") {
 		t.Errorf("cli/color missing nested frontmatter name: %s", content)
+	}
+}
+
+func TestReadTopicCLIProjectLayout(t *testing.T) {
+	content, ok, err := readTopic("cli/project-layout")
+	if err != nil {
+		t.Fatalf("readTopic(cli/project-layout): %v", err)
+	}
+	if !ok {
+		t.Fatal("expected ok for cli/project-layout")
+	}
+	if !strings.Contains(content, "go-best-practice/cli/project-layout") {
+		t.Errorf("cli/project-layout missing nested frontmatter name: %s", content)
+	}
+	if !strings.Contains(content, "kool create go-cli") && !strings.Contains(content, "go-cli") {
+		t.Errorf("cli/project-layout missing go-cli guidance: %s", content)
+	}
+	if !strings.Contains(content, "run.Main") && !strings.Contains(content, "run/") {
+		t.Errorf("cli/project-layout missing run package guidance: %s", content)
 	}
 }
 
@@ -344,7 +366,7 @@ func TestEmbeddedSkillMDNoInstallGuidelines(t *testing.T) {
 		"install --cursor",
 		"install --global",
 	}
-	lower := strings.ToLower(skillTemplate)
+	lower := strings.ToLower(skill.Root)
 	for _, phrase := range forbidden {
 		if strings.Contains(lower, phrase) {
 			t.Errorf("SKILL.md must not document CLI install/show plumbing (%q found); use --help and README instead", phrase)

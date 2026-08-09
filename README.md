@@ -20,12 +20,16 @@ go-best-practice skill cli/color --show
 go-best-practice vet -h
 ```
 
-## Module
+## Module layout
 
 ```
 github.com/xhd2015/go-best-practice
+├── cmd/go-best-practice/   # thin main only (go install …/cmd/go-best-practice)
+├── run/                    # CLI orchestration (skill, topics, vet dispatch)
+├── vet/                    # domain package
+├── skill/                  # SKILL.md + nested TOPIC.md (//go:embed)
+└── tests/
 ```
 
-Binary package: `cmd/go-best-practice`. Depends on
-`github.com/xhd2015/skills/skillcmd` for skill `--list` / `--show` /
-`--install` hosting.
+Depends on `github.com/xhd2015/skills/skillcmd` for skill `--list` /
+`--show` / `--install` hosting. See `skill --show cli/project-layout`.
