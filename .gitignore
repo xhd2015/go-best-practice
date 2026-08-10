@@ -3,5 +3,5 @@ bin/
 *.test
 .DS_Store
 .upload-credentials.json
-go-best-practice-darwin-*
-go-best-practice-linux-*
+go-best-practice-v*-darwin-*
+go-best-practice-v*-linux-*
