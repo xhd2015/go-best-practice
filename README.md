@@ -7,8 +7,15 @@ flag parsing, embed assets, and more). Extracted from
 ## Install
 
 ```bash
+curl -fsSL https://raw.githubusercontent.com/xhd2015/go-best-practice/master/install.sh | bash
+```
+
+Or with Go:
+
+```bash
 go install github.com/xhd2015/go-best-practice/cmd/go-best-practice@latest
 ```
+
 
 ## Usage
 
