@@ -1,0 +1,7 @@
+bin/
+*.exe
+*.test
+.DS_Store
+.upload-credentials.json
+go-best-practice-darwin-*
+go-best-practice-linux-*

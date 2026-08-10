@@ -28,7 +28,19 @@ github.com/xhd2015/go-best-practice
 ├── run/                    # CLI orchestration (skill, topics, vet dispatch)
 ├── vet/                    # domain package
 ├── skill/                  # SKILL.md + nested TOPIC.md (//go:embed)
+├── script/                 # build, install, bundle, github/release
+├── install.sh              # curl installer for GitHub release binaries
 └── tests/
+```
+
+## Developer install / release
+
+```bash
+go run ./script/install          # build then go install ./cmd/go-best-practice
+go run ./script/build            # go build -o bin/go-best-practice
+go run ./script/bundle           # host OS/arch binary
+go run ./script/bundle/for-linux # linux/amd64 binary
+go run ./script/github/release --dry-run
 ```
 
 Depends on `github.com/xhd2015/skills/skillcmd` for skill `--list` /
