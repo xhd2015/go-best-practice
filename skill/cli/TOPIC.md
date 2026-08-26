@@ -1,22 +1,22 @@
 ---
 name: go-best-practice/cli
 description: >-
-  CLI UX (layout, color, streaming, output-alignment, dry-run, inline
-  TUI mouse) and skill CLI packaging shapes. Load a child with:
+  CLI UX (layout, color, streaming, output-alignment, dry-run, config,
+  inline TUI mouse) and skill CLI packaging shapes. Load a child with:
   go-best-practice skill --show cli/<topic>
 ---
 
 # cli — CLI UX and skill CLI packaging
 
 Recipes for building Go CLIs: how to lay out packages, how output looks
-and streams, interactive terminal UIs, and how to ship skill binaries
-that embed `SKILL.md` / nested `TOPIC.md` trees.
+and streams, interactive terminal UIs, persisted preferences, and how to
+ship skill binaries that embed `SKILL.md` / nested `TOPIC.md` trees.
 
 This is a **category index**. `project-layout` covers source layout;
-`color`, `streaming`, `output-alignment`, and `dry-run` are general CLI
-I/O UX; `inline-tui-mouse` is mouse hit-testing for inline TUIs;
-`skill-cli` is how to package skill CLIs. Flag parsing lives separately
-under `flags-parsing`.
+`color`, `streaming`, `output-alignment`, `dry-run`, and `config` are
+general CLI I/O UX; `inline-tui-mouse` is mouse hit-testing for inline
+TUIs; `skill-cli` is how to package skill CLIs. Flag parsing lives
+separately under `flags-parsing`.
 
 ## Topics
 
@@ -31,6 +31,9 @@ under `flags-parsing`.
   tabwriter
 - `dry-run` — one pipeline with side-effect gates; avoid a separate
   dry-run function that duplicates logic
+- `config` — persist flag preferences in tool-home `config.json`:
+  `--set-config` / `--show-config` / `--no-config`, precedence, gray
+  `notice:` when a value comes from config
 - `skill-cli` — skill CLI shapes: single-skill, multi-skill host,
   topic discovery
 - `inline-tui-mouse` — mouse hit-testing for inline (non-alt-screen)
@@ -46,10 +49,12 @@ go-best-practice skill --show cli/color
 go-best-practice skill --show cli/streaming
 go-best-practice skill --show cli/output-alignment
 go-best-practice skill --show cli/dry-run
+go-best-practice skill --show cli/config
 go-best-practice skill --show cli/skill-cli
 go-best-practice skill --show cli/inline-tui-mouse
 go-best-practice skill cli/color --show
 ```
+
 
 ## See also
 

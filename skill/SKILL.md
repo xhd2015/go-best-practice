@@ -33,6 +33,9 @@ slash-separated path (e.g. `flags-parsing/types`, `cli/dry-run`).
     measure + pad (primary), rune-count width, ANSI-safe measure
   - `dry-run` — one pipeline with side-effect gates; avoid a
     separate dry-run function that duplicates logic
+  - `config` — persist flag preferences in tool-home `config.json`:
+    `--set-config` / `--show-config` / `--no-config`, precedence,
+    gray `notice:` when a value comes from config
   - `skill-cli` — skill CLI shapes: single-skill, multi-skill host,
     topic discovery
   - `inline-tui-mouse` — mouse hit-testing for inline (non-alt-screen)
@@ -64,6 +67,7 @@ go-best-practice skill --show cli
 go-best-practice skill --show cli/project-layout
 go-best-practice skill --show cli/dry-run
 go-best-practice skill --show cli/output-alignment
+go-best-practice skill --show cli/config
 go-best-practice skill flags-parsing/types --show
 
 # YAML frontmatter only
