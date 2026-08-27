@@ -2,8 +2,8 @@
 name: go-best-practice
 description: >-
   Index of Go best-practice recipes (kool create, external commands,
-  CLI UX, less-flags, go:embed assets). Use when scaffolding a Go
-  project or choosing a CLI, flag, dry-run, or embed pattern. Load a
+  CLI UX, less-flags, go:embed assets/version). Use when scaffolding a
+  Go project or choosing a CLI, flag, dry-run, or embed pattern. Load a
   topic: go-best-practice skill --show <topic-path>
 ---
 
@@ -51,6 +51,8 @@ slash-separated path (e.g. `flags-parsing/types`, `cli/dry-run`).
 - `go-embed-assets` — ship generated UI/extension assets with
   `//go:embed`: placeholders so bare `go install` compiles, fat local
   bundle, and hydrate from version-pinned GitHub release archives
+- `go-embed-version` — tracked `VERSION.txt` + `//go:embed`; stamp
+  during build/release and always restore original bytes
 
 ## Retrieve
 
@@ -68,6 +70,7 @@ go-best-practice skill --show cli/project-layout
 go-best-practice skill --show cli/dry-run
 go-best-practice skill --show cli/output-alignment
 go-best-practice skill --show cli/config
+go-best-practice skill --show go-embed-version
 go-best-practice skill flags-parsing/types --show
 
 # YAML frontmatter only

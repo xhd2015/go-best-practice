@@ -35,7 +35,9 @@ like kool itself.
 | Embedding `../skill` from another package | Embed **inside** the package directory that owns the files |
 
 `//go:embed` patterns cannot use `..`. Put the embed directive next to the
-files (e.g. `skill/embed.go` next to `skill/SKILL.md`).
+files (e.g. `skill/embed.go` next to `skill/SKILL.md`). For a product
+version string, put tracked `VERSION.txt` next to the `//go:embed` (see
+`go-embed-version`); do not embed `../VERSION.txt`.
 
 ## Shape A — small single binary (kool `go-cli` template)
 
@@ -183,6 +185,7 @@ black-box binary tests.
 - `kool-create` — `kool create go-cli` and other scaffolds
 - `cli/skill-cli` — skill embed + `--show` / `--install` shapes
 - `flags-parsing/subcommand` — dispatch + `--help` at every level
+- `go-embed-version` — tracked `VERSION.txt` stamp/restore beside the embed
 
 Reveal with:
 

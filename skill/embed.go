@@ -12,5 +12,6 @@ var Root string
 //go:embed cmd-exec
 //go:embed flags-parsing
 //go:embed go-embed-assets
+//go:embed go-embed-version
 //go:embed kool-create
 var Tree embed.FS

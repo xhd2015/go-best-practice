@@ -34,6 +34,7 @@ func TestListTopics(t *testing.T) {
 		"flags-parsing/subcommand",
 		"flags-parsing/types",
 		"go-embed-assets",
+		"go-embed-version",
 		"kool-create",
 	}
 	for _, expected := range expectedTopics {
@@ -72,6 +73,25 @@ func TestReadTopicGoEmbedAssets(t *testing.T) {
 	}
 	if !strings.Contains(content, "hydrate") {
 		t.Errorf("go-embed-assets missing hydrate guidance: %s", content)
+	}
+}
+
+func TestReadTopicGoEmbedVersion(t *testing.T) {
+	content, ok, err := readTopic("go-embed-version")
+	if err != nil {
+		t.Fatalf("readTopic(go-embed-version): %v", err)
+	}
+	if !ok {
+		t.Fatal("expected ok for go-embed-version")
+	}
+	if !strings.Contains(content, "go-best-practice/go-embed-version") {
+		t.Errorf("go-embed-version missing nested frontmatter name: %s", content)
+	}
+	if !strings.Contains(content, "restore") {
+		t.Errorf("go-embed-version missing restore guidance: %s", content)
+	}
+	if !strings.Contains(content, "//go:embed VERSION.txt") {
+		t.Errorf("go-embed-version missing embed directive: %s", content)
 	}
 }
 

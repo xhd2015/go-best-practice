@@ -283,6 +283,8 @@ func ResolveUI(version string, cfg DownloadConfig) (fs.FS, source string, err er
 
 ## See also
 
+- `go-embed-version` — tracked `VERSION.txt` stamp/restore; hydrate
+  pins download URLs to that binary version
 - `cmd-exec` — running bundle/install/release scripts from Go
 - `kool-create` — scaffolds (e.g. go-react) that often need this pattern
 - Worked product docs: browser-agent **Asset hydrate**
