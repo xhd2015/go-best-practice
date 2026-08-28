@@ -29,6 +29,8 @@ slash-separated path (e.g. `flags-parsing/types`, `cli/dry-run`).
   - `streaming` — stream CLI output as work proceeds; avoid
     buffering all output until the end (when to buffer, flush,
     NDJSON vs full JSON)
+  - `staged-markers` — stage-style progress: flush-left `[n/total]`
+    spine, kind-aligned indented detail between stages (stderr)
   - `output-alignment` — column pad/width/truncate; hand-rolled
     measure + pad (primary), rune-count width, ANSI-safe measure
   - `dry-run` — one pipeline with side-effect gates; avoid a
@@ -68,6 +70,7 @@ go-best-practice skill --show
 go-best-practice skill --show cli
 go-best-practice skill --show cli/project-layout
 go-best-practice skill --show cli/dry-run
+go-best-practice skill --show cli/staged-markers
 go-best-practice skill --show cli/output-alignment
 go-best-practice skill --show cli/config
 go-best-practice skill --show go-embed-version

@@ -1,9 +1,9 @@
 ---
 name: go-best-practice/cli
 description: >-
-  CLI UX (layout, color, streaming, output-alignment, dry-run, config,
-  inline TUI mouse) and skill CLI packaging shapes. Load a child with:
-  go-best-practice skill --show cli/<topic>
+  CLI UX (layout, color, streaming, staged-markers, output-alignment,
+  dry-run, config, inline TUI mouse) and skill CLI packaging shapes.
+  Load a child with: go-best-practice skill --show cli/<topic>
 ---
 
 # cli — CLI UX and skill CLI packaging
@@ -13,10 +13,10 @@ and streams, interactive terminal UIs, persisted preferences, and how to
 ship skill binaries that embed `SKILL.md` / nested `TOPIC.md` trees.
 
 This is a **category index**. `project-layout` covers source layout;
-`color`, `streaming`, `output-alignment`, `dry-run`, and `config` are
-general CLI I/O UX; `inline-tui-mouse` is mouse hit-testing for inline
-TUIs; `skill-cli` is how to package skill CLIs. Flag parsing lives
-separately under `flags-parsing`.
+`color`, `streaming`, `staged-markers`, `output-alignment`, `dry-run`,
+and `config` are general CLI I/O UX; `inline-tui-mouse` is mouse
+hit-testing for inline TUIs; `skill-cli` is how to package skill CLIs.
+Flag parsing lives separately under `flags-parsing`.
 
 ## Topics
 
@@ -26,6 +26,8 @@ separately under `flags-parsing`.
   and the `NO_COLOR` env convention
 - `streaming` — stream CLI output as work proceeds; avoid buffering
   all output until the end (when to buffer, flush, NDJSON vs full JSON)
+- `staged-markers` — stage-style progress: flush-left `[n/total]`
+  spine, kind-aligned indented detail between stages (stderr)
 - `output-alignment` — column pad/width/truncate; hand-rolled measure
   + pad (primary), rune-count width, ANSI-safe measure, optional
   tabwriter
@@ -47,6 +49,7 @@ go-best-practice skill --show cli
 go-best-practice skill --show cli/project-layout
 go-best-practice skill --show cli/color
 go-best-practice skill --show cli/streaming
+go-best-practice skill --show cli/staged-markers
 go-best-practice skill --show cli/output-alignment
 go-best-practice skill --show cli/dry-run
 go-best-practice skill --show cli/config
