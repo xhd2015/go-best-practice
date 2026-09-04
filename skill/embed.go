@@ -14,4 +14,5 @@ var Root string
 //go:embed go-embed-assets
 //go:embed go-embed-version
 //go:embed kool-create
+//go:embed time-string
 var Tree embed.FS

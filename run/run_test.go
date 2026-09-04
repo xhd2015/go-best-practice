@@ -36,6 +36,7 @@ func TestListTopics(t *testing.T) {
 		"go-embed-assets",
 		"go-embed-version",
 		"kool-create",
+		"time-string",
 	}
 	for _, expected := range expectedTopics {
 		if !topicSet[expected] {
@@ -92,6 +93,28 @@ func TestReadTopicGoEmbedVersion(t *testing.T) {
 	}
 	if !strings.Contains(content, "//go:embed VERSION.txt") {
 		t.Errorf("go-embed-version missing embed directive: %s", content)
+	}
+}
+
+func TestReadTopicTimeString(t *testing.T) {
+	content, ok, err := readTopic("time-string")
+	if err != nil {
+		t.Fatalf("readTopic(time-string): %v", err)
+	}
+	if !ok {
+		t.Fatal("expected ok for time-string")
+	}
+	if !strings.Contains(content, "go-best-practice/time-string") {
+		t.Errorf("time-string missing nested frontmatter name: %s", content)
+	}
+	if !strings.Contains(content, "local offset") {
+		t.Errorf("time-string missing local offset guidance: %s", content)
+	}
+	if !strings.Contains(content, "time.RFC3339") {
+		t.Errorf("time-string missing time.RFC3339: %s", content)
+	}
+	if !strings.Contains(content, ".UTC()") {
+		t.Errorf("time-string missing .UTC() anti-pattern: %s", content)
 	}
 }
 
