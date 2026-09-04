@@ -1,8 +1,9 @@
 ---
 name: go-best-practice/cli/staged-markers
 description: >-
-  Stage-style CLI progress: flush-left [n/total] markers as the spine,
-  kind-aligned indented detail between stages (stderr).
+  Stage-style CLI progress: flush-left [n/total] markers (exactly one per
+  stage) as the spine; kind-aligned indented detail appends under that
+  marker (stderr).
 ---
 
 # staged-markers — `[n/total]` stage spine
@@ -25,10 +26,10 @@ results), not a fake stage counter per item.
 | `n` | 1-based | Stable for the run’s stage plan |
 | `total` | Fixed before first marker | May depend on flags (e.g. 2 / 4 / 5) |
 | `kind` | Short lowercase name | Pad with `%-12s` so msgs align |
-| Same `n` twice | Allowed | Long stages: start intent, then `ok` / `skip` |
-| Interleaving | Allowed | Detail / `notice:` between markers |
-| Detail indent | **Kind column** | Leading spaces = `len("[%d/%d] ")` for open stage |
+| Markers per stage | **Exactly one** `[n/total]` | No start-then-`ok` second marker for the same `n` |
+| Detail | Kind-aligned under open stage | `notice:`, `ok`, `would:`, evidence `skip:` / `skipped (…)` |
 | Verbose | Opt-in | Default = spine; `-v` adds kind-aligned detail |
+| Dry-run | Same probes as live | Gate mutations; kind-aligned `would:`; never stamp `skip (dry-run)` (see `cli/dry-run`) |
 | Fatal errors | Flush-left `Error:` | Non-zero exit; keep prior markers |
 
 ## Marker format
@@ -37,13 +38,15 @@ results), not a fake stage counter per item.
 fmt.Fprintf(w, "[%d/%d] %-12s %s\n", n, total, kind, msg)
 ```
 
-Typical `msg` fragments: start intent (`wait result.json`,
-`commit+push+MR`), `ok`, `skip (dry-run)`, `skipped (reason)`.
+Typical `msg` fragments: stage intent (`wait result.json`,
+`commit+push+MR`), or a short final status when there is no detail
+(`ok`, `skipped (reason)`). Do **not** use `skip (dry-run)` — the user
+already passed `--dry-run`.
 
 ```text
 [1/5] launch       headless create-mr auto-merge
 [2/5] agent        wait result.json
-[2/5] agent        ok
+      ok
 ```
 
 ### Compute `total` once
@@ -63,7 +66,7 @@ func stageTotal(createMR, autoMerge bool) int {
 Do not change `total` after the first marker. Skip remaining work with
 `skipped (…)` on later stages rather than shrinking the denominator.
 
-## Kind-aligned detail (between stages)
+## Kind-aligned detail (under the open stage)
 
 Detail lines must **not** reuse `[n/total]`. Indent so text starts at
 the same column as `kind` (`launch`, `validate`, …):
@@ -74,26 +77,30 @@ func progress(w io.Writer, n, total int, kind, msg string) {
     fmt.Fprintf(w, "%s%-12s %s\n", prefix, kind, msg)
 }
 
-func stageNotice(w io.Writer, n, total int, format string, args ...any) {
+func stageDetail(w io.Writer, n, total int, format string, args ...any) {
     prefix := fmt.Sprintf("[%d/%d] ", n, total)
     indent := strings.Repeat(" ", len(prefix))
-    fmt.Fprintf(w, indent+"notice: "+format+"\n", args...)
+    fmt.Fprintf(w, indent+format+"\n", args...)
 }
+// stageDetail(w, n, total, "ok")
+// stageDetail(w, n, total, "would: git push …")
+// stageDetail(w, n, total, "notice: …")
 ```
 
 ```text
 [4/5] ship         commit+push+MR
       notice: ship: git commit -m "…"
       notice: ship: git push origin HEAD:…
-[4/5] ship         ok
+      ok
 ```
 
 | Concern | Rule |
 | ------- | ---- |
 | Align to | Start of `kind` for the **open** stage’s `n` / `total` |
 | Nest depth | One level under the current stage |
-| Detail prefix | Prefer `notice:` for verbose micro-steps |
+| Detail prefix | `notice:` (verbose micro-steps); `would:` (planned mutate); `ok` (stage finished after intent msg) |
 | Non-fatal `warning:` | Same kind-column indent |
+| Evidence no-op | `skip:` / `skipped (…)` with a real reason — not “because dry-run” |
 | Fatal `Error:` | Flush left (not nested) |
 
 When `total >= 10`, unpadded `%d` can shift the kind column by one
@@ -101,15 +108,16 @@ When `total >= 10`, unpadded `%d` can shift the kind column by one
 numbers to `digits(total)` (prefer space-pad over zero-pad) if a fixed
 column matters for that tool.
 
-Grep the spine with `^\[[0-9]+/` — markers stay flush left.
+Grep the spine with `^\[[0-9]+/` — markers stay flush left. A correct
+run has **exactly `total`** matching lines.
 
 ## Verbosity and dry-run
 
 | Mode | stderr |
 | ---- | ------ |
-| Default | Stage markers (start / `ok` / `skip`) |
-| Verbose | Same spine + kind-aligned `notice:` (and similar) between markers |
-| Dry-run | Still emit every stage; msgs like `skip (dry-run)` (see `cli/dry-run`) |
+| Default | One marker per stage (intent or short status as `msg`) |
+| Verbose | Same spine + kind-aligned `notice:` / `ok` / `would:` under the open stage |
+| Dry-run | Same spine and **real probes** as live; gate mutations; kind-aligned `would:` under mutate stages; **never** `skip (dry-run)` (see `cli/dry-run`) |
 
 Quiet mode must remain scannable as an outline; do not dump git/API
 micro-steps without a verbose gate.
@@ -123,15 +131,15 @@ $ mytool sink --create-mr --auto-merge -v
 [1/5] launch       headless create-mr auto-merge
 [2/5] agent        wait result.json
       notice: ping loop started
-[2/5] agent        ok
+      ok
 [3/5] validate     result.json
       notice: ship: read/validate /path/result.json
-[3/5] validate     ok
+      ok
 [4/5] ship         commit+push+MR
       notice: ship: git add -- topics/p.md
       notice: ship: git commit -m "docs(kb): …"
       notice: ship: git push origin HEAD:tester/…
-[4/5] ship         ok
+      ok
 [5/5] merge        ok
 ok  mr=https://example.com/merge_requests/12
 ```
@@ -156,15 +164,20 @@ $ mytool sink --create-mr
 Error: propose agent: timeout
 ```
 
-**Dry-run (full stage plan):**
+**Dry-run (probes run; mutations gated; no `skip (dry-run)` stamps):**
 
 ```text
-$ mytool sink --dry-run --create-mr --auto-merge
-[1/5] launch       skip (dry-run) headless create-mr auto-merge
-[2/5] agent        skip (dry-run)
-[3/5] validate     skip (dry-run)
-[4/5] ship         skip (dry-run)
-[5/5] merge        skip (dry-run)
+$ mytool sink --dry-run --create-mr --auto-merge -v
+[1/5] launch       headless create-mr auto-merge
+[2/5] agent        wait result.json
+      would: wait result.json
+[3/5] validate     result.json
+[4/5] ship         commit+push+MR
+      would: git add -- topics/p.md
+      would: git commit -m "docs(kb): …"
+      would: git push origin HEAD:tester/…
+[5/5] merge        merge MR
+      would: merge MR
 ```
 
 Color (when enabled via `cli/color`): yellow `warning:` and red
@@ -175,21 +188,24 @@ or other machine-readable stdout.
 
 | Avoid | Prefer |
 | ----- | ------ |
+| Second `[n/total]` for start then `ok` | One marker; append `ok` / `notice:` under kind |
 | Renumber `n` for every log line | One `n` per stage; detail under kind |
 | Indent `[n/total]` lines | Markers flush left |
-| Flush-left `notice:` between stages | Kind-column indent |
-| Wrap every detail as `[4/5] ship …` | `notice:` (or plain) under kind |
-| Shrink `total` when skipping later stages | Keep `total`; emit `skipped (…)` |
+| Flush-left `notice:` / `would:` between stages | Kind-column indent |
+| Wrap every detail as `[4/5] ship …` | `notice:` / `would:` / `ok` under kind |
+| Every stage labeled `skip (dry-run)` | Same probe msgs as live; kind-aligned `would:` for gated mutates |
+| Shrink `total` when skipping later stages | Keep `total`; emit `skipped (…)` with evidence |
 | `[i/N]` for every scanned file as “stages” | Stream results (`cli/streaming`) |
 
 ## Testing notes
 
 | Goal | Approach |
 | ---- | -------- |
-| Marker shape | Capture stderr; exact `"%d/%d] %-12s"` lines for each stage |
+| Marker shape | Capture stderr; exact `"%d/%d] %-12s"` lines |
+| One marker per stage | Assert **exactly `total`** lines matching `^\[[0-9]+/` |
 | Kind indent | Assert detail lines start with `strings.Repeat(" ", len(fmt.Sprintf("[%d/%d] ", n, total)))` |
-| Quiet vs verbose | Without `-v`, no micro-step `notice:`; with `-v`, notices appear between markers |
-| Dry-run | Every stage present; msgs contain `skip (dry-run)` |
+| Quiet vs verbose | Without `-v`, no micro-step `notice:`; with `-v`, notices appear under markers |
+| Dry-run | Every stage present; probes/`would:` as live would plan; **no** `skip (dry-run)` |
 | Partial error | Prior markers kept; flush-left `Error:`; non-zero exit |
 
 ## Out of scope
@@ -203,7 +219,8 @@ or other machine-readable stdout.
 - `cli/streaming` — progressive stdout; progress/diagnostics on stderr
 - `cli/output-alignment` — measure/pad when building custom columns
 - `cli/color` — ANSI gating; never color machine-readable output
-- `cli/dry-run` — one pipeline; dry-run still walks the same stages
+- `cli/dry-run` — one pipeline; probes run; gate mutations; no
+  `skip (dry-run)` stamps
 
 Reveal with:
 
