@@ -7,8 +7,8 @@ explanation: subprocess CLI against session-built go-best-practice binary
 
 - Exit code 0.
 - stdout lists skill name `go-best-practice`.
-- stdout contains topic path line `cli/output-alignment`.
-- stdout still lists prior topics: `cli`, `cli/color`, `flags-parsing`.
+- stdout contains topic path line `cli/output/alignment`.
+- stdout still lists prior topics: `cli`, `cli/output/color`, `flags-parsing`.
 - Trailing newline after last content line (fmt.Println inventory).
 
 ## Side Effects
@@ -50,8 +50,11 @@ func Assert(t *testing.T, d *session.Doctest, req *Request, resp *Response, err 
 	for _, want := range []string{
 		"go-best-practice",
 		"cli",
-		"cli/color",
-		"cli/output-alignment",
+		"cli/output",
+		"cli/output/color",
+		"cli/output/alignment",
+		"cli/output/staged-markers",
+		"cli/output/streaming",
 		"flags-parsing",
 	} {
 		if !lines[want] {

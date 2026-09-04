@@ -7,7 +7,7 @@ explanation: subprocess CLI against session-built go-best-practice binary
 
 - Exit code 0.
 - stdout contains skill name `go-best-practice`.
-- stdout mentions `cli/output-alignment` in the Topics index (or equivalent
+- stdout mentions `cli/output/alignment` in the Topics index (or equivalent
   topic listing in root SKILL.md).
 
 ## Side Effects
@@ -42,8 +42,8 @@ func Assert(t *testing.T, d *session.Doctest, req *Request, resp *Response, err 
 	if !strings.Contains(resp.Stdout, "go-best-practice") {
 		t.Fatalf("stdout missing skill name go-best-practice:\n%s", resp.Stdout)
 	}
-	if !strings.Contains(resp.Stdout, "cli/output-alignment") {
-		t.Fatalf("stdout missing cli/output-alignment in root index:\n%s", resp.Stdout)
+	if !strings.Contains(resp.Stdout, "cli/output/alignment") {
+		t.Fatalf("stdout missing cli/output/alignment in root index:\n%s", resp.Stdout)
 	}
 }
 ```

@@ -8,7 +8,7 @@ user -> go-best-practice skill --show -> root SKILL.md
 
 ## Preconditions
 
-- Root SKILL.md names the skill and lists topics including output-alignment.
+- Root SKILL.md names the skill and lists topics including alignment.
 
 ## Steps
 

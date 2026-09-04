@@ -1,16 +1,16 @@
 # Scenario
 
-**Feature**: skill --list includes cli/output-alignment and prior topics
+**Feature**: skill --list includes cli/output/alignment and prior topics
 
 ```
 # inventory must list new nested topic and existing ones
 user -> go-best-practice skill --list
-  -> stdout lines: go-best-practice, cli, cli/color, cli/output-alignment, flags-parsing, …
+  -> stdout lines: go-best-practice, cli, cli/output/color, cli/output/alignment, flags-parsing, …
 ```
 
 ## Preconditions
 
-- Embed tree includes `cli/output-alignment/TOPIC.md` plus prior topics.
+- Embed tree includes `cli/output/alignment/TOPIC.md` plus prior topics.
 
 ## Steps
 

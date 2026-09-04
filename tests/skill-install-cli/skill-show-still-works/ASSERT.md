@@ -2,7 +2,7 @@
 
 - Command exits with code 0.
 - stdout contains `go-best-practice`.
-- Root index may also mention newer topics (e.g. `cli/output-alignment`); that
+- Root index may also mention newer topics (e.g. `cli/output/alignment`); that
   must not break this assert.
 
 ## Side Effects

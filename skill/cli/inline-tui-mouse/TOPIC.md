@@ -329,5 +329,5 @@ go-best-practice skill cli/inline-tui-mouse --show
 
 ## See also
 
-- `cli/color` — TTY / `NO_COLOR` for status paints  
-- `cli/streaming` — progressive stdout (orthogonal to mouse)  
+- `cli/output/color` — TTY / `NO_COLOR` for status paints  
+- `cli/output/streaming` — progressive stdout (orthogonal to mouse)  

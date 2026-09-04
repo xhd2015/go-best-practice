@@ -1,9 +1,9 @@
 ---
 name: go-best-practice/cli
 description: >-
-  CLI UX (layout, color, streaming, staged-markers, output-alignment,
-  dry-run, config, inline TUI mouse) and skill CLI packaging shapes.
-  Load a child with: go-best-practice skill --show cli/<topic>
+  CLI UX (layout, output/*, dry-run, config, inline TUI mouse) and skill
+  CLI packaging shapes. Load a child with:
+  go-best-practice skill --show cli/<topic>
 ---
 
 # cli — CLI UX and skill CLI packaging
@@ -13,24 +13,20 @@ and streams, interactive terminal UIs, persisted preferences, and how to
 ship skill binaries that embed `SKILL.md` / nested `TOPIC.md` trees.
 
 This is a **category index**. `project-layout` covers source layout;
-`color`, `streaming`, `staged-markers`, `output-alignment`, `dry-run`,
-and `config` are general CLI I/O UX; `inline-tui-mouse` is mouse
-hit-testing for inline TUIs; `skill-cli` is how to package skill CLIs.
-Flag parsing lives separately under `flags-parsing`.
+`output/*` covers emit/render; `dry-run` and `config` are behavior /
+prefs; `inline-tui-mouse` is mouse hit-testing for inline TUIs;
+`skill-cli` is how to package skill CLIs. Flag parsing lives separately
+under `flags-parsing`.
 
 ## Topics
 
 - `project-layout` — thin main / `cmd`, `run` package, assets outside
   `cmd` (matches `kool create go-cli`)
-- `color` — terminal ANSI color: `--color` / `--no-color`, TTY auto,
-  and the `NO_COLOR` env convention
-- `streaming` — stream CLI output as work proceeds; avoid buffering
-  all output until the end (when to buffer, flush, NDJSON vs full JSON)
-- `staged-markers` — stage-style progress: flush-left `[n/total]`
-  spine, kind-aligned indented detail between stages (stderr)
-- `output-alignment` — column pad/width/truncate; hand-rolled measure
-  + pad (primary), rune-count width, ANSI-safe measure, optional
-  tabwriter
+- `output` — emit and render CLI text (category)
+  - `streaming` — stream units as ready; stdout vs stderr; NDJSON
+  - `color` — `--color` / `--no-color`, TTY auto, `NO_COLOR`
+  - `staged-markers` — `[n/total]` spine (one per stage); kind-aligned detail
+  - `alignment` — column measure/pad/truncate (rune width, ANSI-safe)
 - `dry-run` — one pipeline with side-effect gates; avoid a separate
   dry-run function that duplicates logic
 - `config` — persist flag preferences in tool-home `config.json`:
@@ -47,17 +43,17 @@ Flag parsing lives separately under `flags-parsing`.
 ```bash
 go-best-practice skill --show cli
 go-best-practice skill --show cli/project-layout
-go-best-practice skill --show cli/color
-go-best-practice skill --show cli/streaming
-go-best-practice skill --show cli/staged-markers
-go-best-practice skill --show cli/output-alignment
+go-best-practice skill --show cli/output
+go-best-practice skill --show cli/output/streaming
+go-best-practice skill --show cli/output/color
+go-best-practice skill --show cli/output/staged-markers
+go-best-practice skill --show cli/output/alignment
 go-best-practice skill --show cli/dry-run
 go-best-practice skill --show cli/config
 go-best-practice skill --show cli/skill-cli
 go-best-practice skill --show cli/inline-tui-mouse
-go-best-practice skill cli/color --show
+go-best-practice skill cli/output/color --show
 ```
-
 
 ## See also
 

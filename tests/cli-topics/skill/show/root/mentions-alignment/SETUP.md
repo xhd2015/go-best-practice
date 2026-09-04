@@ -1,16 +1,16 @@
 # Scenario
 
-**Feature**: root skill --show names go-best-practice and indexes cli/output-alignment
+**Feature**: root skill --show names go-best-practice and indexes cli/output/alignment
 
 ```
 # root index must surface the new nested topic
 user -> go-best-practice skill --show
-  -> stdout: go-best-practice + Topics mentioning cli/output-alignment
+  -> stdout: go-best-practice + Topics mentioning cli/output/alignment
 ```
 
 ## Preconditions
 
-- Root SKILL.md Topics section includes `cli/output-alignment` (or equivalent index path).
+- Root SKILL.md Topics section includes `cli/output/alignment` (or equivalent index path).
 
 ## Steps
 

@@ -1,11 +1,11 @@
 ---
-name: go-best-practice/cli/output-alignment
+name: go-best-practice/cli/output/alignment
 description: >-
   Align CLI columns and fields: hand-rolled measure + pad (primary),
   optional tabwriter, rune-count width, ANSI-safe measure, truncate.
 ---
 
-# output-alignment — columns, pad, width, and truncate
+# alignment — columns, pad, width, and truncate
 
 When a Go CLI prints tables or side-by-side fields, **measure visible
 width**, then **pad** (or **truncate**) so columns line up. Prefer a
@@ -165,7 +165,7 @@ func padRightANSI(s string, width int) string {
 }
 ```
 
-See also `cli/color` for when to emit ANSI at all (`--color` /
+See also `cli/output/color` for when to emit ANSI at all (`--color` /
 `--no-color` / TTY / `NO_COLOR`).
 
 ## Anti-patterns
@@ -179,6 +179,13 @@ See also `cli/color` for when to emit ANSI at all (`--color` /
 
 ## See also
 
-- `cli/streaming` — when to buffer for tables vs stream fixed-width rows
-- `cli/color` — three-mode color policy; strip for measure, emit when allowed
+- `cli/output/streaming` — when to buffer for tables vs stream fixed-width rows
+- `cli/output/color` — three-mode color policy; strip for measure, emit when allowed
+- `cli/output/staged-markers` — `[n/total]` spines; kind-aligned detail indent
 - `flags-parsing` — flag shapes for `--width` / output options if exposed
+
+Reveal with:
+
+```bash
+go-best-practice skill --show cli/output/alignment
+```

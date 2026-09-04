@@ -222,7 +222,8 @@ path.
 
 ## See also
 
-- `cli/streaming` — print planned units as you go; do not buffer the
+- `cli/output/staged-markers` — one `[n/total]` per stage; kind-aligned `would:` under mutate stages
+- `cli/output/streaming` — print planned units as you go; do not buffer the
   whole dry-run report unless you need a table
 - `flags-parsing` — wire `--dry-run` with less-flags
 - `cmd-exec` — run preflight always (or under dry-run); print mutate

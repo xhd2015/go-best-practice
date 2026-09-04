@@ -9,7 +9,7 @@ user -> go-best-practice skill --list -> go-best-practice + topic paths
 
 ## Preconditions
 
-- Nested topics include `cli/output-alignment` after implementer port.
+- Nested topics include `cli/output/alignment` after implementer port.
 
 ## Steps
 

@@ -22,8 +22,8 @@ go install github.com/xhd2015/go-best-practice/cmd/go-best-practice@latest
 ```bash
 go-best-practice skill --list
 go-best-practice skill --show
-go-best-practice skill --show cli/output-alignment
-go-best-practice skill cli/color --show
+go-best-practice skill --show cli/output/alignment
+go-best-practice skill cli/output/color --show
 go-best-practice vet -h
 ```
 

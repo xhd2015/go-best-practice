@@ -89,5 +89,5 @@ need subseconds, migrating old `Z` rows.
 
 ## See also
 
-- `cli/streaming` — jsonl as the on-disk log shape
+- `cli/output/streaming` — jsonl as the on-disk log shape
 - `cli/config` — other small JSON files under a tool home

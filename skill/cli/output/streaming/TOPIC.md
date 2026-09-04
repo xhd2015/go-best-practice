@@ -1,5 +1,5 @@
 ---
-name: go-best-practice/cli/streaming
+name: go-best-practice/cli/output/streaming
 description: >-
   Stream CLI output as work proceeds; avoid buffering all output until
   the end. When buffering is justified, flush, NDJSON vs full JSON.
@@ -203,7 +203,7 @@ for _, item := range items {
 payloads. For unbounded lists, prefer NDJSON so you never hold the
 entire document in memory or delay the first record until the last.
 
-Do **not** put ANSI color in JSON / NDJSON (see `cli/color`).
+Do **not** put ANSI color in JSON / NDJSON (see `cli/output/color`).
 
 ## CLI shape examples
 
@@ -245,7 +245,7 @@ Usage: mytool find [OPTIONS] [PATH]...
   --json    emit NDJSON records on stdout (no ANSI)
 ```
 
-Color (when enabled via `cli/color`): yellow `warning:` and red `Error:`
+Color (when enabled via `cli/output/color`): yellow `warning:` and red `Error:`
 on stderr; green success tokens and gray meta on stdout for human mode.
 No ANSI in `--json` / NDJSON.
 
@@ -266,15 +266,15 @@ Harness pipes are fine: streaming behavior does not depend on TTY.
 - `--stream` / `--buffer` flags as the primary UX
 - Full interactive TUI redraw (bubbletea, etc.)
 - Spinner / progress-bar library recipes
-- Stage-style `[n/total]` spines (see `cli/staged-markers`)
+- Stage-style `[n/total]` spines (see `cli/output/staged-markers`)
 - Holding all human output only because stdout is a pipe (pipelines
   benefit from streaming too)
 
 ## See also
 
-- `cli/staged-markers` — fixed multi-stage `[n/total]` progress on
-  stderr; kind-aligned detail between stages
-- `cli/color` — when to emit ANSI; never color machine-readable output
+- `cli/output/staged-markers` — fixed multi-stage `[n/total]` progress on
+  stderr; kind-aligned detail under the open stage
+- `cli/output/color` — when to emit ANSI; never color machine-readable output
 - `cmd-exec` — external commands inherit stdout/stderr (live stream by
   default); prefer that over capturing then reprinting unless you need
   the bytes
@@ -283,5 +283,5 @@ Harness pipes are fine: streaming behavior does not depend on TTY.
 Reveal with:
 
 ```bash
-go-best-practice skill --show cli/streaming
+go-best-practice skill --show cli/output/streaming
 ```

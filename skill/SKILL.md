@@ -24,15 +24,11 @@ slash-separated path (e.g. `flags-parsing/types`, `cli/dry-run`).
 - `cli` — CLI UX, project layout, and skill CLI packaging
   - `project-layout` — thin main / `cmd`, `run` package, assets outside
     `cmd` (matches `kool create go-cli`)
-  - `color` — terminal ANSI color: `--color` / `--no-color`, TTY
-    auto, and the `NO_COLOR` env convention
-  - `streaming` — stream CLI output as work proceeds; avoid
-    buffering all output until the end (when to buffer, flush,
-    NDJSON vs full JSON)
-  - `staged-markers` — stage-style progress: flush-left `[n/total]`
-    spine, kind-aligned indented detail between stages (stderr)
-  - `output-alignment` — column pad/width/truncate; hand-rolled
-    measure + pad (primary), rune-count width, ANSI-safe measure
+  - `output` — emit and render CLI text
+    - `streaming` — stream as you go; stdout vs stderr; NDJSON
+    - `color` — `--color` / `--no-color`, TTY auto, `NO_COLOR`
+    - `staged-markers` — `[n/total]` spine (one per stage); kind-aligned detail
+    - `alignment` — column measure/pad/truncate (rune width, ANSI-safe)
   - `dry-run` — one pipeline with side-effect gates; avoid a
     separate dry-run function that duplicates logic
   - `config` — persist flag preferences in tool-home `config.json`:
@@ -72,8 +68,11 @@ go-best-practice skill --show
 go-best-practice skill --show cli
 go-best-practice skill --show cli/project-layout
 go-best-practice skill --show cli/dry-run
-go-best-practice skill --show cli/staged-markers
-go-best-practice skill --show cli/output-alignment
+go-best-practice skill --show cli/output
+go-best-practice skill --show cli/output/streaming
+go-best-practice skill --show cli/output/color
+go-best-practice skill --show cli/output/staged-markers
+go-best-practice skill --show cli/output/alignment
 go-best-practice skill --show cli/config
 go-best-practice skill --show go-embed-version
 go-best-practice skill --show time-string

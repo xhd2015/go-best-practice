@@ -20,13 +20,15 @@ func TestListTopics(t *testing.T) {
 	}
 	expectedTopics := []string{
 		"cli",
-		"cli/color",
 		"cli/dry-run",
 		"cli/inline-tui-mouse",
-		"cli/output-alignment",
+		"cli/output",
+		"cli/output/alignment",
+		"cli/output/color",
+		"cli/output/staged-markers",
+		"cli/output/streaming",
 		"cli/project-layout",
 		"cli/skill-cli",
-		"cli/streaming",
 		"cmd-exec",
 		"flags-parsing",
 		"flags-parsing/collect",
@@ -135,31 +137,31 @@ func TestReadTopicSkillCLI(t *testing.T) {
 }
 
 func TestReadTopicCLIStreaming(t *testing.T) {
-	content, ok, err := readTopic("cli/streaming")
+	content, ok, err := readTopic("cli/output/streaming")
 	if err != nil {
-		t.Fatalf("readTopic(cli/streaming): %v", err)
+		t.Fatalf("readTopic(cli/output/streaming): %v", err)
 	}
 	if !ok {
-		t.Fatal("expected ok for cli/streaming")
+		t.Fatal("expected ok for cli/output/streaming")
 	}
-	if !strings.Contains(content, "go-best-practice/cli/streaming") {
-		t.Errorf("cli/streaming missing nested frontmatter name: %s", content)
+	if !strings.Contains(content, "go-best-practice/cli/output/streaming") {
+		t.Errorf("cli/output/streaming missing nested frontmatter name: %s", content)
 	}
 	if !strings.Contains(content, "stream") {
-		t.Errorf("cli/streaming missing stream guidance: %s", content)
+		t.Errorf("cli/output/streaming missing stream guidance: %s", content)
 	}
 }
 
 func TestReadTopicCLIColor(t *testing.T) {
-	content, ok, err := readTopic("cli/color")
+	content, ok, err := readTopic("cli/output/color")
 	if err != nil {
-		t.Fatalf("readTopic(cli/color): %v", err)
+		t.Fatalf("readTopic(cli/output/color): %v", err)
 	}
 	if !ok {
-		t.Fatal("expected ok for cli/color")
+		t.Fatal("expected ok for cli/output/color")
 	}
-	if !strings.Contains(content, "go-best-practice/cli/color") {
-		t.Errorf("cli/color missing nested frontmatter name: %s", content)
+	if !strings.Contains(content, "go-best-practice/cli/output/color") {
+		t.Errorf("cli/output/color missing nested frontmatter name: %s", content)
 	}
 }
 

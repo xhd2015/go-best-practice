@@ -26,7 +26,7 @@ error leaves are unlabeled for fast discovery.
   `~/.agents/skills/go-best-practice` (under isolated `HOME`), or explicit dir;
   dry-run prints `[dry-run]` without writing.
 - **Embed FS** — root `SKILL.md` plus nested `path/TOPIC.md` tree (including
-  `cli/skill-cli` and newer topics such as `cli/output-alignment`).
+  `cli/skill-cli` and newer topics such as `cli/output/alignment`).
 
 ### Behaviors
 

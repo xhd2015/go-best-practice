@@ -2,7 +2,7 @@
 
 Doc-style e2e tests for the standalone `go-best-practice` CLI after extract
 from the skills monorepo. Covers topic inventory (including new
-`cli/output-alignment`), nested show (both flag orders), root skill show, and
+`cli/output/alignment`), nested show (both flag orders), root skill show, and
 `vet` help.
 
 **Layer:** L3 e2e — build `./cmd/go-best-practice` once per session, subprocess
@@ -19,20 +19,20 @@ CLI. Every leaf is labeled `e2e`.
 - **skillcmd SingleSkill** — serves embedded root `SKILL.md` and nested
   `path/TOPIC.md` tree for `--list` / `--show` (both flag orders).
 - **Embed FS** — root skill index plus topics under `cli/`, `flags-parsing/`,
-  etc., including **new** `cli/output-alignment/TOPIC.md`.
+  etc., including **new** `cli/output/alignment/TOPIC.md`.
 - **vet** — best-practice checker subcommand with less-flags help.
 
 ### Behaviors
 
 - **List** — `skill --list` prints skill name then flat topic paths (one per
-  line), including `cli/output-alignment` and prior topics (`cli`,
-  `cli/color`, `flags-parsing`, …).
-- **Show nested** — `skill --show cli/output-alignment` and
-  `skill cli/output-alignment --show` print the nested topic body with
-  frontmatter name `go-best-practice/cli/output-alignment` and alignment
+  line), including `cli/output/alignment` and prior topics (`cli`,
+  `cli/output/color`, `flags-parsing`, …).
+- **Show nested** — `skill --show cli/output/alignment` and
+  `skill cli/output/alignment --show` print the nested topic body with
+  frontmatter name `go-best-practice/cli/output/alignment` and alignment
   guidance (pad / width / truncate or similar).
 - **Show root** — `skill --show` prints root `SKILL.md` naming
-  `go-best-practice` and indexing `cli/output-alignment`.
+  `go-best-practice` and indexing `cli/output/alignment`.
 - **Vet help** — `vet -h` / `vet --help` exits 0 and prints usage mentioning
   vet / best-practice violations.
 
@@ -51,11 +51,11 @@ req.Args (e.g. skill --list | skill --show … | vet -h)
 cli-topics/
 ├── skill/
 │   ├── list/
-│   │   └── includes-output-alignment
+│   │   └── includes-alignment
 │   └── show/
 │       ├── root/
-│       │   └── mentions-output-alignment
-│       └── nested-output-alignment/
+│       │   └── mentions-alignment
+│       └── nested-alignment/
 │           ├── flag-before-path
 │           └── path-before-flag
 └── vet/
@@ -67,10 +67,10 @@ cli-topics/
 
 | Leaf | Args | Expected markers (subset) |
 |------|------|---------------------------|
-| `skill/list/includes-output-alignment` | `skill --list` | `go-best-practice`, `cli/output-alignment`, `cli`, `cli/color`, `flags-parsing` |
-| `skill/show/root/mentions-output-alignment` | `skill --show` | `go-best-practice`, `cli/output-alignment` in Topics/index |
-| `skill/show/nested-output-alignment/flag-before-path` | `skill --show cli/output-alignment` | name `go-best-practice/cli/output-alignment`; pad/width/truncate guidance |
-| `skill/show/nested-output-alignment/path-before-flag` | `skill cli/output-alignment --show` | same nested markers as flag-before-path |
+| `skill/list/includes-alignment` | `skill --list` | `go-best-practice`, `cli/output/alignment`, `cli`, `cli/output/color`, `flags-parsing` |
+| `skill/show/root/mentions-alignment` | `skill --show` | `go-best-practice`, `cli/output/alignment` in Topics/index |
+| `skill/show/nested-alignment/flag-before-path` | `skill --show cli/output/alignment` | name `go-best-practice/cli/output/alignment`; pad/width/truncate guidance |
+| `skill/show/nested-alignment/path-before-flag` | `skill cli/output/alignment --show` | same nested markers as flag-before-path |
 | `vet/help/short-flag` | `vet -h` | exit 0; usage mentions `vet` and best-practice / violations |
 
 ## How to Run
@@ -82,7 +82,7 @@ doctest test -v --label e2e ./tests/cli-topics
 ```
 
 Classic TDD: expect **RED** until `cmd/go-best-practice` exists in this module
-and embeds `cli/output-alignment` (do not call the skills monorepo binary).
+and embeds `cli/output/alignment` (do not call the skills monorepo binary).
 
 ## Version
 

@@ -574,7 +574,7 @@ skills after install.
 # e.g.
 #   my-skill
 #   cli
-#   cli/color
+#   cli/output/color
 #   cli/skill-cli
 #   flags-parsing
 #   flags-parsing/types
@@ -589,7 +589,7 @@ my-skill/
 ├── cli/
 │   ├── TOPIC.md                      # name: my-skill/cli
 │   ├── color/
-│   │   └── TOPIC.md                  # name: my-skill/cli/color
+│   │   └── TOPIC.md                  # name: my-skill/cli/output/color
 │   └── skill-cli/
 │       └── TOPIC.md                  # name: my-skill/cli/skill-cli
 └── flags-parsing/
@@ -606,7 +606,7 @@ After install:
 .agents/skills/my-skill/
 ├── SKILL.md
 ├── cli/TOPIC.md
-├── cli/color/TOPIC.md
+├── cli/output/color/TOPIC.md
 ├── cli/skill-cli/TOPIC.md
 ├── flags-parsing/TOPIC.md
 ├── flags-parsing/types/TOPIC.md
@@ -630,7 +630,7 @@ List topics and show **retrieve** examples (domain commands — allowed here):
 
         my-skill skill --show
         my-skill skill --show cli
-        my-skill skill --show cli/color
+        my-skill skill --show cli/output/color
         my-skill skill --show flags-parsing
         my-skill skill --show flags-parsing/types
         my-skill skill flags-parsing/types --show
@@ -885,8 +885,8 @@ Intermediate directories that have children still ship their own `TOPIC.md` so
 
 ## See also
 
-- `cli/color` — terminal ANSI color policy for skill CLIs
-- `cli/streaming` — stream CLI output as work proceeds
+- `cli/output/color` — terminal ANSI color policy for skill CLIs
+- `cli/output/streaming` — stream CLI output as work proceeds
 - `flags-parsing/subcommand` — sub-command dispatch + **every level needs `--help`**
 - `flags-parsing` — less-flags `Help(...)` options
 

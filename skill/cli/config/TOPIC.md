@@ -54,7 +54,7 @@ product-agnostic.
    notice: agent-runner=codex (from config)
    ```
 
-   Color **only** the `notice:` prefix **gray** via `cli/color`
+   Color **only** the `notice:` prefix **gray** via `cli/output/color`
    (`ModeFromFlags`, `EnabledFor` on stderr). No ANSI in
    `--show-config` JSON. Wire `--color` / `--no-color` on the ask path
    that prints the notice.
@@ -132,7 +132,7 @@ Help snippets:
 
 ## See also
 
-- `cli/color` — `--color` / `--no-color`, gray `notice:` prefix
+- `cli/output/color` — `--color` / `--no-color`, gray `notice:` prefix
 - `flags-parsing` — bool/string flags and help text with less-flags
 - `cli/dry-run` — one control flow; do not fork a second “config path”
 

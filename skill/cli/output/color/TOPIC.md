@@ -1,5 +1,5 @@
 ---
-name: go-best-practice/cli/color
+name: go-best-practice/cli/output/color
 description: >-
   Terminal ANSI color for CLI output: --color / --no-color, TTY auto,
   and the NO_COLOR environment convention.
@@ -241,7 +241,7 @@ only “any escape present”.
 
 ## See also
 
-- `cli/streaming` — stream output as work proceeds
+- `cli/output/streaming` — stream output as work proceeds
 - `cli/config` — gray `notice:` when a preference comes from config.json
 - `flags-parsing` — bool flags and help text with less-flags
 - [no-color.org](https://no-color.org/) — `NO_COLOR` convention
@@ -249,5 +249,5 @@ only “any escape present”.
 Reveal with:
 
 ```bash
-go-best-practice skill --show cli/color
+go-best-practice skill --show cli/output/color
 ```

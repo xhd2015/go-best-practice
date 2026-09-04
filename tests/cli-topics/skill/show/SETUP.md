@@ -17,4 +17,4 @@ user -> go-best-practice skill <path> --show -> same nested body
 
 ## Steps
 
-1. Leaves under `root/` and `nested-output-alignment/` set show argv.
+1. Leaves under `root/` and `nested-alignment/` set show argv.

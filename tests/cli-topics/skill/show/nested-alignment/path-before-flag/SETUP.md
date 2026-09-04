@@ -1,9 +1,9 @@
 # Scenario
 
-**Feature**: skill cli/output-alignment --show prints nested topic (path before flag)
+**Feature**: skill cli/output/alignment --show prints nested topic (path before flag)
 
 ```
-user -> go-best-practice skill cli/output-alignment --show
+user -> go-best-practice skill cli/output/alignment --show
   -> same nested markers as flag-before-path
 ```
 
@@ -20,7 +20,7 @@ import (
 
 func Setup(t *testing.T, d *session.Doctest, req *Request) error {
 	_ = d
-	req.Args = []string{"skill", "cli/output-alignment", "--show"}
+	req.Args = []string{"skill", "cli/output/alignment", "--show"}
 	return nil
 }
 ```

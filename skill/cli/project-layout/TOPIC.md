@@ -177,7 +177,7 @@ black-box binary tests.
 ## Out of scope
 
 - Flag parsing details (`flags-parsing`)
-- Color / streaming / tables (`cli/color`, `cli/streaming`, `cli/output-alignment`)
+- Color / streaming / tables (`cli/output/color`, `cli/output/streaming`, `cli/output/alignment`)
 - Skill action flags (`cli/skill-cli`)
 
 ## See also
