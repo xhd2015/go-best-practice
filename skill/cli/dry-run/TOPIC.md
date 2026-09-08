@@ -1,21 +1,27 @@
 ---
 name: go-best-practice/cli/dry-run
 description: >-
-  Dry-run as a side-effect gate on one pipeline: observe with real
-  preflight checks, print exact would/skip lines, never mutate. Avoid a
-  separate dry-run function that duplicates logic.
+  Dry-run as a side-effect gate on one pipeline: same probes as live,
+  bypass only the mutate call. Avoid a separate dry-run function.
+  Do not prefix lines with [dry-run] — the flag is already on the argv.
 ---
 
 # dry-run — one path, observe, gate side effects
 
 `--dry-run` should answer: **what would *this* run do against current
-state?** It is not a second program that reimplements discovery, and it
-is not a static script of would-lines from flags alone.
+state?** It is the **live function** with mutate calls gated — not a
+second planner, and not a static script of would-lines from flags alone.
 
-Keep **one control flow**. Dry-run **may run real preflight / read-only
-checks**. It **must not** perform stateful mutations (writes, uploads,
-destructive remote commands, package installs). The same steps resolve
-inputs and compute the plan in both modes; only the mutate step is gated.
+Keep **one control flow**. Dry-run **runs the same preflight / read-only
+checks as live**. It **must not** perform stateful mutations (writes,
+uploads, destructive remote commands, package installs). The same steps
+resolve inputs and compute the plan in both modes; only the mutate step
+is gated.
+
+`--dry-run` is already on the command line. **Do not** prefix output
+lines with `[dry-run]` — that is noisy and redundant. Use `would:` /
+`skip:` / `notice:` / `warning:` (staged CLIs: kind-aligned under
+`[n/total]`; see `cli/output/staged-markers`).
 
 ## Why one path
 
@@ -32,28 +38,26 @@ inputs and compute the plan in both modes; only the mutate step is gated.
    struct). Do not branch to a sibling that reimplements the flow.
 2. **Same discovery and plan** — tag, inventory, specs, target paths,
    and artifact names come from the same helpers in both modes.
-3. **Preflight is allowed** — dry-run **runs** read-only checks
-   (`stat` / `test -f`, BatchMode SSH reads, API GET, `spl … run --`
-   non-mutating probes). Label them:
-   `[dry-run] probing (read-only): …`
-4. **Gate only side effects** — after observation, either print the
-   **exact** mutate command live would run, or an evidence-backed skip.
-   Do not paraphrase (`would revoke somehow`).
-5. **Exact command fidelity** — `[dry-run] would …` lines use the same
-   argv / script / paths the live `apply` / `runOrDry` path would
-   execute.
+3. **Same probes as live** — dry-run **runs** the read-only checks live
+   uses (`stat` / `test -f`, BatchMode SSH reads, API GET, `spl … run --`
+   non-mutating probes). Optional verbose: `notice:` / `probing (read-only):`.
+4. **Gate only the mutate call** — after observation, either print the
+   **exact** mutate command live would run (`would:`), or an
+   evidence-backed skip. Do not paraphrase (`would revoke somehow`).
+5. **Exact command fidelity** — `would:` lines use the same argv /
+   script / paths the live `apply` / `runOrDry` path would execute.
 6. **No-op honesty** — if probes show nothing to change, print
-   `[dry-run] skip: … (already absent|already done)` with evidence.
-   Do not print a fake would-mutate.
+   `skip: … (already absent|already done)` with evidence.
+   Do not print a fake would-mutate. Do not stamp `skip (dry-run)`.
 7. **Error policy** — live hard-fails required steps. Dry-run soft-fails
    only when the **preflight itself** is unavailable (e.g. network
-   down): `[dry-run] warning:` on stderr, then best-effort exact plan
-   from known paths/comments. Do not soft-skip observation when a
-   cheap probe exists. Do not invent a parallel algorithm to “make
-   dry-run work.”
-8. **Output** — planned lines on stdout with `[dry-run]`; warnings on
-   stderr; exit 0 when planning succeeded (including soft-failed
-   probes that still produced a plan).
+   down): `warning:` on stderr, then best-effort exact plan from known
+   paths/comments. Do not soft-skip observation when a cheap probe
+   exists. Do not invent a parallel algorithm to “make dry-run work.”
+8. **Output** — `--dry-run` is on the argv; do not repeat `[dry-run]` on
+   every line. Planned mutate: `would:`. No-op: `skip:`. Soft-fail:
+   `warning:` on stderr. Exit 0 when planning succeeded (including
+   soft-failed probes that still produced a plan).
 
 ## Allowed vs forbidden under `--dry-run`
 
@@ -74,7 +78,7 @@ func handle() error {
     var dryRun bool
     // parse flags...
     if dryRun {
-        // Wrong: no probe; paraphrased plan
+        // Wrong: no probe; paraphrased plan; redundant [dry-run] tag
         fmt.Println("[dry-run] would clean remote keys")
         return nil
     }
@@ -93,16 +97,15 @@ func handleTeardown(dryRun bool) error {
         if !dryRun {
             return err
         }
-        fmt.Fprintf(os.Stderr, "[dry-run] warning: probe: %v\n", err)
+        fmt.Fprintf(os.Stderr, "warning: probe: %v\n", err)
     }
     cmd := exactRemoveCmd() // same argv live would use
+    if !present {
+        fmt.Printf("skip: remote key already absent\n")
+        return nil
+    }
     if dryRun {
-        fmt.Printf("[dry-run] probing (read-only): …\n")
-        if !present {
-            fmt.Printf("[dry-run] skip: remote key already absent\n")
-            return nil
-        }
-        fmt.Printf("[dry-run] would %s\n", cmd)
+        fmt.Printf("would: %s\n", cmd)
         return nil
     }
     return run(cmd)
@@ -117,7 +120,7 @@ if err != nil {
     return err
 }
 if dryRun {
-    printPlan(actions) // would / skip from observed state
+    printPlan(actions) // would: / skip: from observed state
     return nil
 }
 return apply(actions)
@@ -135,7 +138,7 @@ if err != nil {
     return err
 }
 if dryRun {
-    printPlan(actions) // [dry-run] lines
+    printPlan(actions) // would: / skip:
     return nil
 }
 return apply(actions)
@@ -148,14 +151,14 @@ Same `plan` for both modes. Dry-run never calls `apply`.
 Best for multi-step CLIs (release, sync, teardown):
 
 ```go
-exists, err := probeExists(path) // always (or when dryRun || needBranch)
+exists, err := probeExists(path) // always
 if err != nil { /* live hard-fail; dry-run warn */ }
+if !exists {
+    fmt.Printf("skip: %s already absent\n", path)
+    return nil
+}
 if dryRun {
-    if !exists {
-        fmt.Printf("[dry-run] skip: %s already absent\n", path)
-        return nil
-    }
-    fmt.Printf("[dry-run] would rm -f %s\n", path)
+    fmt.Printf("would: rm -f %s\n", path)
     return nil
 }
 return os.Remove(path)
@@ -192,26 +195,32 @@ absent). Do not stop at a paraphrased “would revoke path”.
 
 ## Output convention
 
+`--dry-run` is on the argv. Do not prefix lines with `[dry-run]`.
+
 ```text
 $ mytool teardown --dry-run
-[dry-run] probing (read-only): ssh host 'grep … authorized_keys'
-[dry-run] skip: no managed lines for comment tool@host
-[dry-run] probing (read-only): spl … -- test -f /tmp/key
-[dry-run] would spl … -- rm -f /tmp/key
+probing (read-only): ssh host 'grep … authorized_keys'
+skip: no managed lines for comment tool@host
+probing (read-only): spl … -- test -f /tmp/key
+would: spl … -- rm -f /tmp/key
 ```
 
 ```text
 $ mytool release --dry-run
-[dry-run] warning: open .upload-credentials.json: no such file or directory
-[dry-run] tag: v1.2.3
-[dry-run] would build: mytool-v1.2.3-linux-amd64
+warning: open .upload-credentials.json: no such file or directory
+tag: v1.2.3
+would: build mytool-v1.2.3-linux-amd64
 ```
 
-- Probing lines → **stdout**, `[dry-run] probing (read-only):`  
-- Planned mutate lines → **stdout**, `[dry-run] would`  
-- No-op lines → **stdout**, `[dry-run] skip:`  
-- Soft-fail warnings → **stderr**, `[dry-run] warning:`  
-- Exit **0** when planning succeeded  
+- Probing lines → **stdout** (or kind-aligned `notice:` when staged / `-v`)
+- Planned mutate → **stdout**, `would:`
+- No-op → **stdout**, `skip:`
+- Soft-fail → **stderr**, `warning:`
+- Exit **0** when planning succeeded
+
+Staged pipelines: same `[n/total]` spine as live; kind-aligned `would:` /
+`skip:` under the open stage (`cli/output/staged-markers`). Never
+`skip (dry-run)`.
 
 ## When a separate preview is OK
 

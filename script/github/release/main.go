@@ -1,11 +1,11 @@
 // usage: go run ./script/github/release [--dry-run]
 //
 // Proposed behavior (sketch):
-//   1. Parse --dry-run / --help flags.
-//   2. Resolve tag and credentials (soft-warn on dry-run; hard-fail live).
-//   3. Plan artifact names with the same formula as BuildRelease.
-//   4. Dry-run: print plan without building or uploading.
-//   5. Live: build multi-platform assets, create/upload GitHub Release.
+//  1. Parse --dry-run / --help flags.
+//  2. Resolve tag and credentials (soft-warn on dry-run; hard-fail live).
+//  3. Plan artifact names with the same formula as BuildRelease.
+//  4. Dry-run: print plan without building or uploading.
+//  5. Live: build multi-platform assets, create/upload GitHub Release.
 package main
 
 import (
@@ -52,37 +52,38 @@ func handle() error {
 	if len(args) > 0 {
 		return fmt.Errorf("unrecognized extra args: %s", strings.Join(args, " "))
 	}
-	if dryRun {
-		return dryRunRelease()
-	}
-	return liveRelease()
+	return runRelease(dryRun)
 }
 
-func dryRunRelease() error {
+func runRelease(dryRun bool) error {
 	tag, err := release.GetTag()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "[dry-run] warning: %v\n", err)
+		if !dryRun {
+			return err
+		}
+		fmt.Fprintf(os.Stderr, "warning: %v\n", err)
 		tag = "(unknown)"
 	}
+	fmt.Printf("tag: %s\n", tag)
+
 	creds, err := release.LoadCredentials(".upload-credentials.json")
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "[dry-run] warning: %v\n", err)
+		if !dryRun {
+			return err
+		}
+		fmt.Fprintf(os.Stderr, "warning: %v\n", err)
 		creds = &release.Credentials{Owner: "xhd2015", Repo: "go-best-practice"}
 	}
-	fmt.Printf("[dry-run] tag: %s\n", tag)
-	for _, spec := range release.DefaultSpecs {
-		fmt.Printf("[dry-run] would build: %s-%s-%s-%s\n", releaseName, tag, spec.OS, spec.Arch)
-	}
-	fmt.Printf("[dry-run] would upload to %s/%s release (creates if 404)\n", creds.Owner, creds.Repo)
-	return nil
-}
 
-func liveRelease() error {
-	result, err := release.BuildRelease(releaseName, nil, release.DefaultSpecs, release.WithPackagePath(packagePath))
-	if err != nil {
-		return err
+	if dryRun {
+		for _, spec := range release.DefaultSpecs {
+			fmt.Printf("would: build %s-%s-%s-%s\n", releaseName, tag, spec.OS, spec.Arch)
+		}
+		fmt.Printf("would: upload to %s/%s release (creates if 404)\n", creds.Owner, creds.Repo)
+		return nil
 	}
-	creds, err := release.LoadCredentials(".upload-credentials.json")
+
+	result, err := release.BuildRelease(releaseName, nil, release.DefaultSpecs, release.WithPackagePath(packagePath))
 	if err != nil {
 		return err
 	}

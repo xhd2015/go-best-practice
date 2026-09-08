@@ -29,7 +29,7 @@ results), not a fake stage counter per item.
 | Markers per stage | **Exactly one** `[n/total]` | No start-then-`ok` second marker for the same `n` |
 | Detail | Kind-aligned under open stage | `notice:`, `ok`, `would:`, evidence `skip:` / `skipped (…)` |
 | Verbose | Opt-in | Default = spine; `-v` adds kind-aligned detail |
-| Dry-run | Same probes as live | Gate mutations; kind-aligned `would:`; never stamp `skip (dry-run)` (see `cli/dry-run`) |
+| Dry-run | Same probes as live | Gate mutations; kind-aligned `would:`; never stamp `skip (dry-run)` or `[dry-run]` (the flag is already on the argv; unstaged CLIs use the same `would:` / `skip:` / `warning:` prefixes — see `cli/dry-run`) |
 | Post-stage summary | Blank stderr line, then stdout | After the last stage output, print one blank line on **stderr**, then the flush-left product / summary on **stdout** (not kind-aligned). Keeps piped stdout clean while separating bands on a TTY |
 | Fatal errors | Flush-left `Error:` | Non-zero exit; keep prior markers. **No** blank before mid-pipeline `Error:` (it aborts the open stage) |
 
