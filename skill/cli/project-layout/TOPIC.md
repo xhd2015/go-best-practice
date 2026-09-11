@@ -138,6 +138,13 @@ func main() {
 
 This repo (`go-best-practice`) uses **Shape B**.
 
+## Install script
+
+After staging embeds (see `go-embed-assets`), install the CLI with a PATH-aware
+helper — not bare `go install` when `~/.local/bin` (or another earlier PATH
+entry) may shadow `$GOPATH/bin`. Recipe: **`cli/project-layout/script/install`**
+(`gotool/localbin/install`).
+
 ## Shape C — multi-command host (kool-scale)
 
 ```text

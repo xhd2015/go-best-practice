@@ -24,6 +24,8 @@ slash-separated path (e.g. `flags-parsing/types`, `cli/dry-run`).
 - `cli` — CLI UX, project layout, and skill CLI packaging
   - `project-layout` — thin main / `cmd`, `run` package, assets outside
     `cmd` (matches `kool create go-cli`)
+    - `script/install` — PATH-aware local binary install (`gotool/localbin/install`:
+      LookPath or `~/.local/bin`, refresh existing copies, EnsureOnPATH, codesign)
   - `output` — emit and render CLI text
     - `streaming` — stream as you go; stdout vs stderr; NDJSON
     - `color` — `--color` / `--no-color`, TTY auto, `NO_COLOR`
@@ -67,6 +69,7 @@ go-best-practice skill --show
 # category / nested (slash path; both flag orders)
 go-best-practice skill --show cli
 go-best-practice skill --show cli/project-layout
+go-best-practice skill --show cli/project-layout/script/install
 go-best-practice skill --show cli/dry-run
 go-best-practice skill --show cli/output
 go-best-practice skill --show cli/output/streaming

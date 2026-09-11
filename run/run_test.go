@@ -28,6 +28,7 @@ func TestListTopics(t *testing.T) {
 		"cli/output/staged-markers",
 		"cli/output/streaming",
 		"cli/project-layout",
+		"cli/project-layout/script/install",
 		"cli/skill-cli",
 		"cmd-exec",
 		"flags-parsing",

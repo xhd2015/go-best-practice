@@ -122,7 +122,11 @@ Use completeness on:
 2. **`install` script:**
    - if on-disk embed is **incomplete** → run bundle,
    - optional `--force-bundle` to refresh even when complete,
-   - then `go install` so the binary embeds the fat tree.
+   - then install with **`gotool/localbin/install`** (LookPath or
+     `~/.local/bin` → `go build -o`, refresh existing GOPATH/GOBIN/.local
+     copies, EnsureOnPATH, macOS codesign) so the binary that PATH actually
+     runs embeds the fat tree — not bare `go install` alone (see
+     `cli/project-layout/script/install`).
 3. Run bundle with the same tooling you use in CI for release binaries.
 
 ### Done when
