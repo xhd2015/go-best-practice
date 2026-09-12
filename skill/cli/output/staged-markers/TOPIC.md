@@ -2,8 +2,9 @@
 name: go-best-practice/cli/output/staged-markers
 description: >-
   Stage-style CLI progress: flush-left [n/total] markers (exactly one per
-  stage) as the spine; kind-aligned detail under that marker (stderr);
-  blank stderr line then flush-left stdout summary after all stages.
+  stage) as the spine; all open-stage body lines kind-aligned via an
+  indenting writer decorator; optional flush-left product only after the
+  last stage.
 ---
 
 # staged-markers — `[n/total]` stage spine
@@ -11,7 +12,8 @@ description: >-
 When a Go CLI runs a **fixed multi-stage pipeline** (launch → work →
 validate → ship → …), print **stage markers** so humans can skim
 progress and tools can grep the outline. Markers are the spine;
-optional detail logs nest under the current stage’s **kind** column.
+**every line emitted while a stage is open** nests under that stage’s
+**kind** column (kind-aligned indent).
 
 Use this for a **known stage count** decided up front (possibly from
 flags). For unbounded item streams, prefer `cli/output/streaming` (line-at-a-time
@@ -21,22 +23,23 @@ results), not a fake stage counter per item.
 
 | Concern | Default | Notes |
 | ------- | ------- | ----- |
-| Stream | **stderr** | Primary results stay on **stdout** |
+| Stream | **stderr** for markers | Stage **bodies** may use stdout and/or stderr; both are kind-aligned while the stage is open |
 | Marker | `[n/total] kind msg` | Flush left; never indent markers |
 | `n` | 1-based | Stable for the run’s stage plan |
 | `total` | Fixed before first marker | May depend on flags (e.g. 2 / 4 / 5) |
 | `kind` | Short lowercase name | Pad with `%-12s` so msgs align |
 | Markers per stage | **Exactly one** `[n/total]` | No start-then-`ok` second marker for the same `n` |
-| Detail | Kind-aligned under open stage | `notice:`, `ok`, `would:`, evidence `skip:` / `skipped (…)` |
-| Verbose | Opt-in | Default = spine; `-v` adds kind-aligned detail |
+| Open-stage body | **Kind-aligned** | Commit logs, merge messages, `notice:` / `would:` / `ok`, progress rows, flushed lane bodies — all indented |
+| Body mechanism | **Indenting writer decorator** | Prefer `io.Writer` that prefixes each line; pass into helpers/libraries (do not post-indent captured strings when a writer was possible) |
+| Verbose | Opt-in micro-steps | Default = spine + necessary body; `-v` adds kind-aligned `notice:` |
 | Dry-run | Same probes as live | Gate mutations; kind-aligned `would:`; never stamp `skip (dry-run)` or `[dry-run]` (the flag is already on the argv; unstaged CLIs use the same `would:` / `skip:` / `warning:` prefixes — see `cli/dry-run`) |
-| Post-stage summary | Blank stderr line, then stdout | After the last stage output, print one blank line on **stderr**, then the flush-left product / summary on **stdout** (not kind-aligned). Keeps piped stdout clean while separating bands on a TTY |
+| Final product | Optional, after last stage | Blank line on **stderr**, then flush-left summary on **stdout** only when it is a distinct end-of-run product (e.g. `seeded …`, `ok  mr=…`) — not mid-pipeline stage bodies |
 | Fatal errors | Flush-left `Error:` | Non-zero exit; keep prior markers. **No** blank before mid-pipeline `Error:` (it aborts the open stage) |
 
 ## Marker format
 
 ```go
-fmt.Fprintf(w, "[%d/%d] %-12s %s\n", n, total, kind, msg)
+fmt.Fprintf(stderr, "[%d/%d] %-12s %s\n", n, total, kind, msg)
 ```
 
 Typical `msg` fragments: stage intent (`wait result.json`,
@@ -67,31 +70,58 @@ func stageTotal(createMR, autoMerge bool) int {
 Do not change `total` after the first marker. Skip remaining work with
 `skipped (…)` on later stages rather than shrinking the denominator.
 
-## Kind-aligned detail (under the open stage)
+## Kind-aligned body (under the open stage)
 
-Detail lines must **not** reuse `[n/total]`. Indent so text starts at
-the same column as `kind` (`launch`, `validate`, …):
+Body lines must **not** reuse `[n/total]`. Indent so text starts at the
+same column as `kind` (`launch`, `validate`, …):
 
 ```go
-func progress(w io.Writer, n, total int, kind, msg string) {
-    prefix := fmt.Sprintf("[%d/%d] ", n, total)
-    fmt.Fprintf(w, "%s%-12s %s\n", prefix, kind, msg)
-}
+pad := strings.Repeat(" ", len(fmt.Sprintf("[%d/%d] ", n, total)))
+```
 
+### Writer decorator (required mechanism)
+
+Decorate stdout/stderr with an **indenting writer** that prefixes every
+complete line with `pad`, then pass those writers into stage helpers and
+libraries. Do not hardcode `os.Stdout` / `os.Stderr` inside stage bodies
+when a writer parameter is available.
+
+```go
+// indentingWriter prefixes each line written to w with indent.
+// (Implement line buffering for partial Write calls.)
+out := newIndentingWriter(os.Stdout, pad)
+errW := newIndentingWriter(os.Stderr, pad)
+
+fmt.Fprintf(os.Stderr, "[%d/%d] %-12s %s\n", n, total, "ship", "commit+push") // marker: undecorated
+runSync(ctx, syncOpts{Out: out, Err: errW})                                 // body: decorated
+runTagNext(..., out)
+runPush(..., out)
+```
+
+When a dependency still hardcodes stdio, give it writers (preferred) or
+temporarily bridge stdio into the decorated writers for that stage only.
+**Avoid** “run → capture full string → indent every line” as the primary
+path when live streaming is possible.
+
+One-off detail lines (when you are not streaming through a writer) may
+still use a small helper:
+
+```go
 func stageDetail(w io.Writer, n, total int, format string, args ...any) {
     prefix := fmt.Sprintf("[%d/%d] ", n, total)
     indent := strings.Repeat(" ", len(prefix))
     fmt.Fprintf(w, indent+format+"\n", args...)
 }
-// stageDetail(w, n, total, "ok")
-// stageDetail(w, n, total, "would: git push …")
-// stageDetail(w, n, total, "notice: …")
+// stageDetail(errW, n, total, "ok")
+// stageDetail(errW, n, total, "would: git push …")
+// stageDetail(errW, n, total, "notice: …")
 ```
 
 ```text
 [4/5] ship         commit+push+MR
       notice: ship: git commit -m "…"
       notice: ship: git push origin HEAD:…
+      merged branch feature into main
       ok
 ```
 
@@ -99,10 +129,11 @@ func stageDetail(w io.Writer, n, total int, format string, args ...any) {
 | ------- | ---- |
 | Align to | Start of `kind` for the **open** stage’s `n` / `total` |
 | Nest depth | One level under the current stage |
+| What is indented | **All** body output until the next marker (any stream) |
 | Detail prefix | `notice:` (verbose micro-steps); `would:` (planned mutate); `ok` (stage finished after intent msg) |
 | Non-fatal `warning:` | Same kind-column indent |
 | Evidence no-op | `skip:` / `skipped (…)` with a real reason — not “because dry-run” |
-| Fatal `Error:` | Flush left (not nested) |
+| Fatal `Error:` | Flush left (not nested; undecorated stderr) |
 
 When `total >= 10`, unpadded `%d` can shift the kind column by one
 (`[9/12]` vs `[10/12]`). Accept that by default; optionally pad both
@@ -112,25 +143,25 @@ column matters for that tool.
 Grep the spine with `^\[[0-9]+/` — markers stay flush left. A correct
 run has **exactly `total`** matching lines.
 
-## Post-stage summary
+## Post-stage summary (optional final product)
 
-When the pipeline finishes and there is a **summary / product** line
-(e.g. `seeded path@ver`, `ok  mr=…`):
+When the pipeline finishes and there is a **distinct end-of-run product**
+line (e.g. `seeded path@ver`, `ok  mr=…`) that is **not** part of a stage
+body:
 
-1. Finish the last stage’s marker and any kind-aligned detail on stderr.
-2. Print **one blank line on stderr** (`fmt.Fprintln(stderr)`).
+1. Finish the last stage’s marker and any kind-aligned body.
+2. Print **one blank line on stderr** (`fmt.Fprintln(stderr)` undecorated).
 3. Print the summary flush-left on **stdout** — not under the kind column.
 
-Do not put the summary on stderr as kind-aligned detail. Do not omit the
-blank when both streams are shown together on a TTY (the gap is what
-distinguishes the summary from the spine). Mid-pipeline `Error:` stays
-flush-left on stderr with **no** preceding blank.
+Mid-pipeline stage bodies (merge messages, tag tables, sync lines, etc.)
+stay kind-aligned; do not flush them left as a “summary.” Mid-pipeline
+`Error:` stays flush-left on stderr with **no** preceding blank.
 
 ## Verbosity and dry-run
 
-| Mode | stderr |
+| Mode | Output |
 | ---- | ------ |
-| Default | One marker per stage (intent or short status as `msg`) |
+| Default | One marker per stage + necessary kind-aligned body |
 | Verbose | Same spine + kind-aligned `notice:` / `ok` / `would:` under the open stage |
 | Dry-run | Same spine and **real probes** as live; gate mutations; kind-aligned `would:` under mutate stages; **never** `skip (dry-run)` (see `cli/dry-run`) |
 
@@ -139,7 +170,7 @@ micro-steps without a verbose gate.
 
 ## CLI shape examples
 
-**Success (markers + verbose detail on stderr; blank; result on stdout):**
+**Success (markers + kind-aligned body; blank; final product on stdout):**
 
 ```text
 $ mytool sink --create-mr --auto-merge -v
@@ -221,13 +252,15 @@ or other machine-readable stdout.
 | Avoid | Prefer |
 | ----- | ------ |
 | Second `[n/total]` for start then `ok` | One marker; append `ok` / `notice:` under kind |
-| Renumber `n` for every log line | One `n` per stage; detail under kind |
+| Renumber `n` for every log line | One `n` per stage; body under kind |
 | Indent `[n/total]` lines | Markers flush left |
-| Flush-left `notice:` / `would:` between stages | Kind-column indent |
+| Flush-left body lines between markers | Kind-column indent via decorated writers |
+| Hardcode `os.Stdout` / `os.Stderr` in stage helpers | Accept `io.Writer`; callers pass indenting writers |
+| Capture then post-indent when a writer was possible | Live write through the decorator |
 | Wrap every detail as `[4/5] ship …` | `notice:` / `would:` / `ok` under kind |
 | Every stage labeled `skip (dry-run)` | Same probe msgs as live; kind-aligned `would:` for gated mutates |
+| Mid-pipeline bodies flush-left as “summary” | Kind-align stage bodies; flush-left only a final product after the last stage |
 | Summary stuck to last stage (no blank) | Blank line on stderr, then flush-left stdout product |
-| Kind-align the stdout summary under the last stage | Summary stays on stdout, flush left |
 | Shrink `total` when skipping later stages | Keep `total`; emit `skipped (…)` with evidence |
 | `[i/N]` for every scanned file as “stages” | Stream results (`cli/output/streaming`) |
 
@@ -237,10 +270,11 @@ or other machine-readable stdout.
 | ---- | -------- |
 | Marker shape | Capture stderr; exact `"%d/%d] %-12s"` lines |
 | One marker per stage | Assert **exactly `total`** lines matching `^\[[0-9]+/` |
-| Kind indent | Assert detail lines start with `strings.Repeat(" ", len(fmt.Sprintf("[%d/%d] ", n, total)))` |
+| Kind indent | Assert open-stage **body** lines start with `strings.Repeat(" ", len(fmt.Sprintf("[%d/%d] ", n, total)))` |
+| Writer decoration | Helpers under test accept `io.Writer`; unit-test the indenting writer’s line prefixing |
 | Quiet vs verbose | Without `-v`, no micro-step `notice:`; with `-v`, notices appear under markers |
 | Dry-run | Every stage present; probes/`would:` as live would plan; **no** `skip (dry-run)` |
-| Post-stage summary | stderr ends with a blank line after the last stage/detail; product on stdout flush-left |
+| Post-stage summary | When present: stderr blank after last stage/body; product on stdout flush-left |
 | Partial error | Prior markers kept; flush-left `Error:` with **no** preceding blank; non-zero exit |
 
 ## Out of scope

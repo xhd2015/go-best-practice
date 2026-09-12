@@ -20,8 +20,8 @@ This is a **category index**. Load a child topic for the full recipe.
   progress; when buffering is OK; NDJSON for long lists
 - `color` — `--color` / `--no-color`, TTY auto, `NO_COLOR`; never color
   machine-readable output
-- `staged-markers` — fixed multi-stage `[n/total]` spine on stderr (one
-  marker per stage); kind-aligned detail under the open stage
+- `staged-markers` — fixed multi-stage `[n/total]` spine (one marker per
+  stage); kind-aligned body via indenting writer decorator
 - `alignment` — measure/pad/truncate columns (rune width, ANSI-safe)
 
 ## Retrieve

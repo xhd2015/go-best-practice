@@ -29,7 +29,7 @@ slash-separated path (e.g. `flags-parsing/types`, `cli/dry-run`).
   - `output` — emit and render CLI text
     - `streaming` — stream as you go; stdout vs stderr; NDJSON
     - `color` — `--color` / `--no-color`, TTY auto, `NO_COLOR`
-    - `staged-markers` — `[n/total]` spine (one per stage); kind-aligned detail
+    - `staged-markers` — `[n/total]` spine (one per stage); kind-aligned body via indenting writers
     - `alignment` — column measure/pad/truncate (rune width, ANSI-safe)
   - `dry-run` — one pipeline with side-effect gates; avoid a
     separate dry-run function that duplicates logic
