@@ -4,7 +4,8 @@ description: >-
   Index of Go best-practice recipes (kool create, external commands,
   CLI UX, less-flags, go:embed assets/version, RFC3339 time strings).
   Use when scaffolding a Go project or choosing a CLI, flag, dry-run,
-  or embed pattern. Load a topic: go-best-practice skill --show <topic-path>
+  embed pattern, or script/dev with backend hot reload. Load a topic:
+  go-best-practice skill --show <topic-path>
 ---
 
 # Go Best Practice Skill
@@ -26,6 +27,8 @@ slash-separated path (e.g. `flags-parsing/types`, `cli/dry-run`).
     `cmd` (matches `kool create go-cli`)
     - `script/install` — PATH-aware local binary install (`gotool/localbin/install`:
       LookPath or `~/.local/bin`, refresh existing copies, EnsureOnPATH, codesign)
+    - `script/dev` — shared dot-pkgs dev/server runner: Go/Air hot reload,
+      Vite HMR, occupied ports, invocation identity, and process cleanup
   - `output` — emit and render CLI text
     - `streaming` — stream as you go; stdout vs stderr; NDJSON
     - `color` — `--color` / `--no-color`, TTY auto, `NO_COLOR`
@@ -70,6 +73,7 @@ go-best-practice skill --show
 go-best-practice skill --show cli
 go-best-practice skill --show cli/project-layout
 go-best-practice skill --show cli/project-layout/script/install
+go-best-practice skill --show cli/project-layout/script/dev
 go-best-practice skill --show cli/dry-run
 go-best-practice skill --show cli/output
 go-best-practice skill --show cli/output/streaming

@@ -145,6 +145,14 @@ helper — not bare `go install` when `~/.local/bin` (or another earlier PATH
 entry) may shadow `$GOPATH/bin`. Recipe: **`cli/project-layout/script/install`**
 (`gotool/localbin/install`).
 
+## Development script
+
+Provide a thin `script/dev` entry, runnable with `go run ./script/dev`, with
+Go backend hot reload through `dot-pkgs/go-pkgs/dev/server` by default.
+For full-stack projects, keep the frontend dev server alive across backend
+rebuilds. Recipe: **`cli/project-layout/script/dev`** (runner lifecycle,
+watch scope, and optional frontend supervision).
+
 ## Shape C — multi-command host (kool-scale)
 
 ```text
