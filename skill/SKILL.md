@@ -41,6 +41,8 @@ slash-separated path (e.g. `flags-parsing/types`, `cli/dry-run`).
     gray `notice:` when a value comes from config
   - `skill-cli` — skill CLI shapes: single-skill, multi-skill host,
     topic discovery
+  - `web-like-cli` — one URL space for page, API and terminal: page
+    documents, collection rows, writes that answer with the page URL
   - `inline-tui-mouse` — mouse hit-testing for inline (non-alt-screen)
     TUIs: CSI 6n origin on one stdin path, dual-origin fallback,
     anti-patterns (sleep probes, parallel `/dev/tty` reads)
@@ -81,6 +83,7 @@ go-best-practice skill --show cli/output/color
 go-best-practice skill --show cli/output/staged-markers
 go-best-practice skill --show cli/output/alignment
 go-best-practice skill --show cli/config
+go-best-practice skill --show cli/web-like-cli
 go-best-practice skill --show go-embed-version
 go-best-practice skill --show time-string
 go-best-practice skill flags-parsing/types --show

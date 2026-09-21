@@ -1,8 +1,8 @@
 ---
 name: go-best-practice/cli
 description: >-
-  CLI UX (layout, output/*, dry-run, config, inline TUI mouse) and skill
-  CLI packaging shapes. Load a child with:
+  CLI UX (layout, output/*, dry-run, config, inline TUI mouse, web-like)
+  and skill CLI packaging shapes. Load a child with:
   go-best-practice skill --show cli/<topic>
 ---
 
@@ -15,7 +15,8 @@ ship skill binaries that embed `SKILL.md` / nested `TOPIC.md` trees.
 This is a **category index**. `project-layout` covers source layout;
 `output/*` covers emit/render; `dry-run` and `config` are behavior /
 prefs; `inline-tui-mouse` is mouse hit-testing for inline TUIs;
-`skill-cli` is how to package skill CLIs. Flag parsing lives separately
+`skill-cli` is how to package skill CLIs; `web-like-cli` keeps a CLI and
+the web app it serves on one URL space. Flag parsing lives separately
 under `flags-parsing`.
 
 ## Topics
@@ -34,6 +35,8 @@ under `flags-parsing`.
   `notice:` when a value comes from config
 - `skill-cli` — skill CLI shapes: single-skill, multi-skill host,
   topic discovery
+- `web-like-cli` — one URL space for page, API and terminal: page
+  documents, collection rows, writes that answer with the page URL
 - `inline-tui-mouse` — mouse hit-testing for inline (non-alt-screen)
   TUIs: view-local hitmaps, CSI 6n origin on one stdin path, dual-origin
   fallback, anti-patterns
@@ -51,6 +54,7 @@ go-best-practice skill --show cli/output/alignment
 go-best-practice skill --show cli/dry-run
 go-best-practice skill --show cli/config
 go-best-practice skill --show cli/skill-cli
+go-best-practice skill --show cli/web-like-cli
 go-best-practice skill --show cli/inline-tui-mouse
 go-best-practice skill cli/output/color --show
 ```
