@@ -1,7 +1,8 @@
 # go-best-practice
 
 Standalone Go CLI and skill index of best-practice recipes (CLI UX,
-flag parsing, embed assets, and more). Extracted from
+flag parsing, embed assets, unified image storage with a shared id
+allocator, and more). Extracted from
 [`github.com/xhd2015/skills`](https://github.com/xhd2015/skills).
 
 ## Install

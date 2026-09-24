@@ -37,6 +37,10 @@ under `flags-parsing`.
   topic discovery
 - `web-like-cli` — one URL space for page, API and terminal: page
   documents, collection rows, writes that answer with the page URL
+  - `id-allocator` — every entity id from one `id.json` per data dir
+    (dot-pkgs `idalloc`, flock, floor reseed, `POST /api/ids`)
+  - `unified-assets` — the image library behind those routes: md5 dedup,
+    magic-byte sniffing, `meta.json` commit marker, audit, delete guard
 - `inline-tui-mouse` — mouse hit-testing for inline (non-alt-screen)
   TUIs: view-local hitmaps, CSI 6n origin on one stdin path, dual-origin
   fallback, anti-patterns
@@ -55,6 +59,8 @@ go-best-practice skill --show cli/dry-run
 go-best-practice skill --show cli/config
 go-best-practice skill --show cli/skill-cli
 go-best-practice skill --show cli/web-like-cli
+go-best-practice skill --show cli/web-like-cli/id-allocator
+go-best-practice skill --show cli/web-like-cli/unified-assets
 go-best-practice skill --show cli/inline-tui-mouse
 go-best-practice skill cli/output/color --show
 ```

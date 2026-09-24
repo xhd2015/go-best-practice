@@ -4,10 +4,12 @@ description: >-
   One URL space for page, API and terminal: a CLI that speaks the web app's
   routes. Page paths render whole page documents, collection paths print rows,
   writes answer with the resource and its page URL, and pasting the browser
-  URL just works. Use when adding CLI access to a Go+React app, when CLI
-  paths and web routes drift, or when an agent must convert URLs before
-  calling the CLI. Triggers: web-like CLI, CLI aligned with web, page
-  document, one URL space, CLI paths match web routes.
+  URL just works. Also the storage half of the same app: one id sequence and
+  one content-addressed image library behind those routes. Use when adding CLI
+  access to a Go+React app, when CLI paths and web routes drift, when an agent
+  must convert URLs before calling the CLI, or when images and ids need one
+  home. Triggers: web-like CLI, CLI aligned with web, page document, one URL
+  space, CLI paths match web routes, unified image storage, id allocator.
 ---
 
 # web-like CLI — one URL space for page, API and terminal
@@ -22,6 +24,10 @@ types in the terminal are the same address:
 When you add a web page or route, add its CLI mapping in the **same change**.
 A CLI that lags the web forces every agent (and human) to convert URLs by
 hand — the exact drift this recipe prevents.
+
+The address space has a storage half too: the ids those routes carry and the
+image library they serve are shared app-wide, not per page — see **Topics**
+below.
 
 ## Path grammar
 
@@ -116,6 +122,43 @@ reuses the cached file) and the path is printed — the agent opens or reads
 the file in its next step. Never render a bare image marker with no address,
 and never inline base64 into the page document.
 
+Where the bytes come from — one library for the whole app, ids from the shared
+sequence, and the guard that keeps a delete from breaking a page — is
+`unified-assets` (with `id-allocator` for the sequence). This section is the
+rendering rule; that recipe is the store.
+
+## Storage: ids and images
+
+A Go+React app that stores things on disk keeps re-inventing the same three
+decisions, and gets them wrong in the same three ways:
+
+| Decision | Naive answer | What breaks |
+|----------|--------------|-------------|
+| Where do ids come from? | `time.Now().UnixNano()`, or a counter per entity type | Two entities share an id; ids sort by nothing; a restart re-issues one |
+| Where do image bytes live? | `<entity>/images/`, one dir per owner | The same picture is stored N times; "list all pictures" has no answer; deleting an owner orphans bytes |
+| Is a stored file a picture? | Trust the upload's file name / `Content-Type` | A 200 with `image/jpeg` and XML error-page bytes behind it |
+
+The fix is one **data directory** holding one **id sequence** and one
+**content-addressed library**, so a page, its API and its CLI path all name the
+same records:
+
+```text
+~/.<app>/
+├── id.json            one sequence for every entity type
+├── id.lock            flock target; stable inode, never renamed
+├── <domain>.json      domain documents, referencing images by id
+└── images/<id>/       image.<ext> (the bytes) + meta.json (written LAST)
+```
+
+## Topics
+
+- `id-allocator` — every entity id from one `id.json` per data dir
+  (dot-pkgs `idalloc`, flock on a stable lock inode, atomic replace, floor
+  reseed, and `POST /api/ids` for a page that needs an id before it renders)
+- `unified-assets` — the image library: `images/<id>/{image.<ext>, meta.json}`,
+  md5 dedup, magic-byte sniffing, an audit that judges bytes, and a delete
+  guard driven by one container registry
+
 ## Sub-sections and shownPage
 
 Address a card as a path segment under the page:
@@ -206,7 +249,16 @@ The spl repo's `ai-workshop` package is the working exemplar:
 
 Scaffold: `kool create go-react-agent-cli` ships the transport half
 (`run/client.go`: verbs, full-URL acceptance, `--json`/`--dry-run`,
-per-verb help) and carries the binding rule list in its `AGENTS.md`.
+per-verb help), the storage half (`server/images*.go` + `server/gallery.go`),
+and carries the binding rule list in its `AGENTS.md`.
+
+## Retrieve
+
+```bash
+go-best-practice skill --show cli/web-like-cli
+go-best-practice skill --show cli/web-like-cli/id-allocator
+go-best-practice skill --show cli/web-like-cli/unified-assets
+```
 
 ## See also
 

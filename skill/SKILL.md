@@ -2,9 +2,11 @@
 name: go-best-practice
 description: >-
   Index of Go best-practice recipes (kool create, external commands,
-  CLI UX, less-flags, go:embed assets/version, RFC3339 time strings).
+  CLI UX, less-flags, go:embed assets/version, unified image storage
+  with a shared id allocator, RFC3339 time strings).
   Use when scaffolding a Go project or choosing a CLI, flag, dry-run,
-  embed pattern, or script/dev with backend hot reload. Load a topic:
+  embed pattern, id allocation, image/asset storage, or script/dev with
+  backend hot reload. Load a topic:
   go-best-practice skill --show <topic-path>
 ---
 
@@ -43,6 +45,10 @@ slash-separated path (e.g. `flags-parsing/types`, `cli/dry-run`).
     topic discovery
   - `web-like-cli` — one URL space for page, API and terminal: page
     documents, collection rows, writes that answer with the page URL
+    - `id-allocator` — every entity id from one `id.json` per data dir
+      (dot-pkgs `idalloc`, flock, floor reseed, `POST /api/ids`)
+    - `unified-assets` — the image library: md5 dedup, magic-byte
+      sniffing, `meta.json` commit marker, audit, delete guard
   - `inline-tui-mouse` — mouse hit-testing for inline (non-alt-screen)
     TUIs: CSI 6n origin on one stdin path, dual-origin fallback,
     anti-patterns (sleep probes, parallel `/dev/tty` reads)
@@ -85,6 +91,9 @@ go-best-practice skill --show cli/output/alignment
 go-best-practice skill --show cli/config
 go-best-practice skill --show cli/web-like-cli
 go-best-practice skill --show go-embed-version
+go-best-practice skill --show cli/web-like-cli
+go-best-practice skill --show cli/web-like-cli/id-allocator
+go-best-practice skill --show cli/web-like-cli/unified-assets
 go-best-practice skill --show time-string
 go-best-practice skill flags-parsing/types --show
 

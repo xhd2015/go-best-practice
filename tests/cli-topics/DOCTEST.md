@@ -19,18 +19,22 @@ CLI. Every leaf is labeled `e2e`.
 - **skillcmd SingleSkill** — serves embedded root `SKILL.md` and nested
   `path/TOPIC.md` tree for `--list` / `--show` (both flag orders).
 - **Embed FS** — root skill index plus topics under `cli/`, `flags-parsing/`,
-  etc., including **new** `cli/output/alignment/TOPIC.md`.
+  `cli/`, etc., including **new** `cli/output/alignment/TOPIC.md` and
+  `cli/web-like-cli/unified-assets/TOPIC.md`.
 - **vet** — best-practice checker subcommand with less-flags help.
 
 ### Behaviors
 
 - **List** — `skill --list` prints skill name then flat topic paths (one per
-  line), including `cli/output/alignment` and prior topics (`cli`,
-  `cli/output/color`, `flags-parsing`, …).
+  line), including `cli/output/alignment`,
+  `cli/web-like-cli/unified-assets` and prior
+  topics (`cli`, `cli/output/color`, `flags-parsing`, …).
 - **Show nested** — `skill --show cli/output/alignment` and
   `skill cli/output/alignment --show` print the nested topic body with
   frontmatter name `go-best-practice/cli/output/alignment` and alignment
-  guidance (pad / width / truncate or similar).
+  guidance (pad / width / truncate or similar). The same holds for
+  `skill --show cli/web-like-cli/unified-assets` (library layout, dedup,
+  sniffing, delete guard).
 - **Show root** — `skill --show` prints root `SKILL.md` naming
   `go-best-practice` and indexing `cli/output/alignment`.
 - **Vet help** — `vet -h` / `vet --help` exits 0 and prints usage mentioning
@@ -55,9 +59,11 @@ cli-topics/
 │   └── show/
 │       ├── root/
 │       │   └── mentions-alignment
-│       └── nested-alignment/
-│           ├── flag-before-path
-│           └── path-before-flag
+│       ├── nested-alignment/
+│       │   ├── flag-before-path
+│       │   └── path-before-flag
+│       └── web-like-cli-unified-assets/
+│           └── (leaf)
 └── vet/
     └── help/
         └── short-flag
@@ -67,10 +73,11 @@ cli-topics/
 
 | Leaf | Args | Expected markers (subset) |
 |------|------|---------------------------|
-| `skill/list/includes-alignment` | `skill --list` | `go-best-practice`, `cli/output/alignment`, `cli`, `cli/output/color`, `flags-parsing` |
+| `skill/list/includes-alignment` | `skill --list` | `go-best-practice`, `cli/output/alignment`, `cli`, `cli/output/color`, `flags-parsing`, `cli/web-like-cli/unified-assets` |
 | `skill/show/root/mentions-alignment` | `skill --show` | `go-best-practice`, `cli/output/alignment` in Topics/index |
 | `skill/show/nested-alignment/flag-before-path` | `skill --show cli/output/alignment` | name `go-best-practice/cli/output/alignment`; pad/width/truncate guidance |
 | `skill/show/nested-alignment/path-before-flag` | `skill cli/output/alignment --show` | same nested markers as flag-before-path |
+| `skill/show/web-like-cli-unified-assets` | `skill --show cli/web-like-cli/unified-assets` | name `go-best-practice/cli/web-like-cli/unified-assets`; `images/<id>`, `meta.json`, `md5`, delete guard |
 | `vet/help/short-flag` | `vet -h` | exit 0; usage mentions `vet` and best-practice / violations |
 
 ## How to Run

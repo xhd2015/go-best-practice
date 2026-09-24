@@ -9,6 +9,8 @@ explanation: subprocess CLI against session-built go-best-practice binary
 - stdout lists skill name `go-best-practice`.
 - stdout contains topic path line `cli/output/alignment`.
 - stdout contains topic path line `cli/web-like-cli`.
+- stdout contains nested topic path lines `cli/web-like-cli/id-allocator`,
+  `cli/web-like-cli/unified-assets`.
 - stdout still lists prior topics: `cli`, `cli/output/color`, `flags-parsing`.
 - Trailing newline after last content line (fmt.Println inventory).
 
@@ -57,6 +59,8 @@ func Assert(t *testing.T, d *session.Doctest, req *Request, resp *Response, err 
 		"cli/output/staged-markers",
 		"cli/output/streaming",
 		"cli/web-like-cli",
+		"cli/web-like-cli/id-allocator",
+		"cli/web-like-cli/unified-assets",
 		"flags-parsing",
 	} {
 		if !lines[want] {
